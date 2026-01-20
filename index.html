@@ -37,6 +37,48 @@
       border-bottom: 1px solid #ddd;
       z-index: 100;
     }
+
+    /* Barra filtri TAGLIA */
+    .size-filter-bar {
+      position: sticky;
+      top: 52px; /* resta sotto la barra tipologia */
+      background: #ffffff;
+      padding: 6px 30px 10px 30px;
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid #e5e5e5;
+      z-index: 90;
+    }
+    
+    .size-filter-bar button {
+      padding: 5px 12px;
+      border: 1px solid #004aad;
+      background-color: #e6efff; /* azzurro chiaro */
+      color: #004aad;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.25s;
+    }
+    
+    .size-filter-bar button.active {
+      background-color: #004aad;
+      color: white;
+      font-weight: bold;
+    }
+
+    
+    <!-- Barra filtri TAGLIA -->
+    <div class="size-filter-bar">
+      <button data-size="all" class="active">Tutte</button>
+      <button data-size="XS">XS</button>
+      <button data-size="S">S</button>
+      <button data-size="M">M</button>
+      <button data-size="L">L</button>
+      <button data-size="XL">XL</button>
+    </div>
+
+    
     .filter-bar button {
       padding: 8px 16px;
       border: none;
@@ -145,7 +187,7 @@
 <section id="tuta" class="active">
   <h2>LA NOSTRA TUTA DI RAPPRESENTANZA</h2>
   <div class="catalog-grid">
-    <div class="card">
+    <div class="card" data-size="4(6XS),6(5XS),8(4XS),10(3XS),12(2XS),14(XS),S,M,L,XL,2XL">
       <img src="100086.200-tuta-sopra.png" class="product-img">
       <h3>Felpa Gala - bianca</h3>
       <p>Codice articolo: 100086.200</p>
@@ -153,7 +195,7 @@
       <p class="price">€20,5 – prezzo affiliati</p>
       <a class="btn" href="#">ORDINA</a>
     </div>
-    <div class="card">
+    <div class="card" data-size="3(7XS),4(6XS),6(5XS),8(4XS),10(3XS),12(2XS),14(XS),S,M,L,XL,2XL">
       <img src="100027.331-tuta-sotto.png" class="product-img">
       <h3>Pantalone lungo uomo Staff blu navy</h3>
       <p>Codice articolo: 100027.331</p>
@@ -167,7 +209,7 @@
 <section id="viaggiare">
   <h2>VIAGGIARE COMODI</h2>
   <div class="catalog-grid">
-    <div class="card">
+    <div class="card" data-size="all">
       <img src="400234.700-zaino.png" class="product-img">
       <h3>Zaino Estadio III blu royal</h3>
       <p>Codice articolo: 400234.700</p>
@@ -175,7 +217,7 @@
       <p class="price">€21,5 – prezzo affiliati</p>
       <a class="btn" href="#">ORDINA</a>
     </div>
-    <div class="card">
+    <div class="card" data-size="all">
       <img src="400006.700-borsone.png" class="product-img">
       <h3>Borsa sportiva Training III blu royal</h3>
       <p>Codice articolo: 400006.700</p>
@@ -189,7 +231,7 @@
 <section id="felpe">
   <h2>LE FELPE CON LOGO</h2>
   <div class="catalog-grid">
-    <div class="card">
+    <div class="card" data-size="4(6XS),6(5XS),8(4XS),10(3XS),12(2XS),14(XS),S,M,L,XL,2XL">
       <img src="100285.700 ROYAL.png" class="product-img">
       <h3>Felpa Faraon – Blu Royal</h3>
       <p>Codice articolo: 100285.700</p>
@@ -197,7 +239,7 @@
       <p class="price">€21 – prezzo affiliati</p>
       <a class="btn" href="#">ORDINA</a>
     </div>
-    <div class="card">
+    <div class="card" data-size="4(6XS),6(5XS),8(4XS),10(3XS),12(2XS),14(XS),S,M,L,XL,2XL">
       <img src="100285.300-faraon-navy.png" class="product-img">
       <h3>Felpa Faraon – Blu Navy</h3>
       <p>Codice articolo: 100285.300</p>
