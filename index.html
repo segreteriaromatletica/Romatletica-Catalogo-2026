@@ -27,6 +27,26 @@
       font-size: 16px;
     }
 
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      text-align: left;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      opacity: 1;
+      transition: opacity 0.4s ease;
+    }
+    .card.hidden {
+      opacity: 0;
+      pointer-events: none; /* evita clic su elementi nascosti */
+      height: 0;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    
     /* FILTRI MODELLO */
     .filter-bar {
       position: sticky;
@@ -173,7 +193,7 @@
 <!-- FILTRI TAGLIA -->
 <div class="size-filter-bar">
   <button data-size="all" class="active">Tutte</button>
-  <button data-size="XS">XS</button>
+ <button data-size="XS">XS</button>
   <button data-size="S">S</button>
   <button data-size="M">M</button>
   <button data-size="L">L</button>
@@ -266,10 +286,29 @@
       sections.forEach(section => {
         section.classList.toggle('active', section.id === activeSection);
       });
-
-      filterBySize();
-    });
-  });
+    
+          function filterBySize() {
+      const activeSec = document.getElementById(activeSection);
+      const cards = activeSec.querySelectorAll('.card');
+    
+      cards.forEach(card => {
+        const sizes = card.getAttribute('data-size');
+    
+        if (activeSize === "all" || sizes === "all" || sizes.includes(activeSize)) {
+          // mostra con fade
+          card.classList.remove('hidden');
+          setTimeout(() => {
+            card.style.display = "block";
+          }, 0);
+        } else {
+          // nascondi con fade
+          card.classList.add('hidden');
+          setTimeout(() => {
+            card.style.display = "none";
+          }, 400); // deve corrispondere alla durata transition
+        }
+      });
+    }
 
   // FILTRO TAGLIA
   sizeButtons.forEach(button => {
