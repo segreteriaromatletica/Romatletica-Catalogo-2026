@@ -40,6 +40,12 @@
       border-radius: 8px;
       background: #fff;
     }
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
   </style>
 </head>
 
@@ -53,16 +59,29 @@
 <section>
   <h2>LE FELPE CON LOGO</h2>
 
-  <div class="card">
-    <img src="100285.700 ROYAL.png" class="product-img">
-    <h3>Felpa Faraon – Blu Royal</h3>
-    <p>Codice articolo: 100285.700</p>
-    <p>Taglie: XS · S · M · L · XL</p>
-    <p><strong>Prezzo affiliati: €21</strong></p>
-    <a class="btn" href="#">ORDINA</a>
-  </div>
+  <div class="catalog-grid">
 
+    <div class="card">
+      <img src="100285.700 ROYAL.png" class="product-img">
+      <h3>Felpa Faraon – Blu Royal</h3>
+      <p>Codice articolo: 100285.700</p>
+      <p>Taglie: XS · S · M · L · XL</p>
+      <p><strong>Prezzo affiliati: €21</strong></p>
+      <a class="btn" href="#">ORDINA</a>
+    </div>
+
+    <div class="card">
+      <img src="100285.700 ROYAL.png" class="product-img">
+      <h3>Felpa Faraon – Blu Navy</h3>
+      <p>Codice articolo: 100285.300</p>
+      <p>Taglie: XS · S · M · L · XL</p>
+      <p><strong>Prezzo affiliati: €21</strong></p>
+      <a class="btn" href="#">ORDINA</a>
+    </div>
+
+  </div>
 </section>
+
 
 </body>
 </html>
