@@ -251,23 +251,56 @@
 </section>
 
 <script>
-  const buttons = document.querySelectorAll('.filter-bar button');
+  const typeButtons = document.querySelectorAll('.filter-bar button');
+  const sizeButtons = document.querySelectorAll('.size-filter-bar button');
   const sections = document.querySelectorAll('section');
 
-  // --- GESTIONE CLICK FILTRI ---
-  buttons.forEach(button => {
+  let activeSection = "tuta";
+  let activeSize = "all";
+
+  // ---- FILTRO TIPOLOGIA ----
+  typeButtons.forEach(button => {
     button.addEventListener('click', () => {
-      buttons.forEach(btn => btn.classList.remove('active'));
+      typeButtons.forEach(btn => btn.classList.remove('active'));
       button.classList.add('active');
 
-      const target = button.getAttribute('data-target');
+      activeSection = button.getAttribute('data-target');
+
       sections.forEach(section => {
-        section.classList.toggle('active', section.id === target);
+        section.classList.toggle('active', section.id === activeSection);
       });
+
+      filterBySize(); // riapplica filtro taglia
     });
   });
 
-  // --- CONTATORE PRODOTTI PER SEZIONE ---
+  // ---- FILTRO TAGLIA ----
+  sizeButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      sizeButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+
+      activeSize = button.getAttribute('data-size');
+      filterBySize();
+    });
+  });
+
+  function filterBySize() {
+    const activeSec = document.getElementById(activeSection);
+    const cards = activeSec.querySelectorAll('.card');
+
+    cards.forEach(card => {
+      const sizes = card.getAttribute('data-size');
+
+      if (activeSize === "all" || sizes === "all" || sizes.includes(activeSize)) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    });
+  }
+
+  // ---- CONTATORI ----
   function updateCounts() {
     sections.forEach(section => {
       const cards = section.querySelectorAll('.card').length;
@@ -278,6 +311,7 @@
 
   updateCounts();
 </script>
+
 
 </body>
 </html>
