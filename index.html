@@ -27,6 +27,7 @@
       font-size: 16px;
     }
 
+    /* FILTRI MODELLO */
     .filter-bar {
       position: sticky;
       top: 0;
@@ -37,48 +38,6 @@
       border-bottom: 1px solid #ddd;
       z-index: 100;
     }
-
-    /* Barra filtri TAGLIA */
-    .size-filter-bar {
-      position: sticky;
-      top: 52px; /* resta sotto la barra tipologia */
-      background: #ffffff;
-      padding: 6px 30px 10px 30px;
-      display: flex;
-      gap: 8px;
-      border-bottom: 1px solid #e5e5e5;
-      z-index: 90;
-    }
-    
-    .size-filter-bar button {
-      padding: 5px 12px;
-      border: 1px solid #004aad;
-      background-color: #e6efff; /* azzurro chiaro */
-      color: #004aad;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 12px;
-      transition: all 0.25s;
-    }
-    
-    .size-filter-bar button.active {
-      background-color: #004aad;
-      color: white;
-      font-weight: bold;
-    }
-
-    
-    <!-- Barra filtri TAGLIA -->
-    <div class="size-filter-bar">
-      <button data-size="all" class="active">Tutte</button>
-      <button data-size="XS">XS</button>
-      <button data-size="S">S</button>
-      <button data-size="M">M</button>
-      <button data-size="L">L</button>
-      <button data-size="XL">XL</button>
-    </div>
-
-    
     .filter-bar button {
       padding: 8px 16px;
       border: none;
@@ -95,6 +54,34 @@
       font-weight: bold;
     }
 
+    /* FILTRI TAGLIA */
+    .size-filter-bar {
+      position: sticky;
+      top: 52px; /* sotto barra modello */
+      background: #ffffff;
+      padding: 6px 30px 10px 30px;
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid #e5e5e5;
+      z-index: 90;
+    }
+    .size-filter-bar button {
+      padding: 5px 12px;
+      border: 1px solid #004aad;
+      background-color: #e6efff;
+      color: #004aad;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.25s;
+    }
+    .size-filter-bar button.active {
+      background-color: #004aad;
+      color: white;
+      font-weight: bold;
+    }
+
+    /* SEZIONI */
     section {
       opacity: 0;
       visibility: hidden;
@@ -109,6 +96,8 @@
       height: auto;
       padding: 30px;
     }
+
+    /* CARD */
     .card {
       background: white;
       padding: 20px;
@@ -161,7 +150,6 @@
     }
   </style>
 </head>
-
 <body>
 
 <header>
@@ -169,7 +157,7 @@
   <p>Asd Romatletica in collaborazione con Joma</p>
 </header>
 
-<!-- Barra dei filtri -->
+<!-- FILTRI MODELLO -->
 <div class="filter-bar">
   <button data-target="tuta" class="active">
     Tuta di Rappresentanza (<span id="count-tuta"></span>)
@@ -182,12 +170,21 @@
   </button>
 </div>
 
-<!-- Sezioni -->
+<!-- FILTRI TAGLIA -->
+<div class="size-filter-bar">
+  <button data-size="all" class="active">Tutte</button>
+  <button data-size="XS">XS</button>
+  <button data-size="S">S</button>
+  <button data-size="M">M</button>
+  <button data-size="L">L</button>
+  <button data-size="XL">XL</button>
+</div>
 
+<!-- SEZIONI -->
 <section id="tuta" class="active">
   <h2>LA NOSTRA TUTA DI RAPPRESENTANZA</h2>
   <div class="catalog-grid">
-    <div class="card" data-size="4(6XS),6(5XS),8(4XS),10(3XS),12(2XS),14(XS),S,M,L,XL,2XL">
+    <div class="card" data-size="XS,S,M,L,XL,2XL">
       <img src="100086.200-tuta-sopra.png" class="product-img">
       <h3>Felpa Gala - bianca</h3>
       <p>Codice articolo: 100086.200</p>
@@ -195,7 +192,7 @@
       <p class="price">€20,5 – prezzo affiliati</p>
       <a class="btn" href="#">ORDINA</a>
     </div>
-    <div class="card" data-size="3(7XS),4(6XS),6(5XS),8(4XS),10(3XS),12(2XS),14(XS),S,M,L,XL,2XL">
+    <div class="card" data-size="XS,S,M,L,XL,2XL">
       <img src="100027.331-tuta-sotto.png" class="product-img">
       <h3>Pantalone lungo uomo Staff blu navy</h3>
       <p>Codice articolo: 100027.331</p>
@@ -231,7 +228,7 @@
 <section id="felpe">
   <h2>LE FELPE CON LOGO</h2>
   <div class="catalog-grid">
-    <div class="card" data-size="4(6XS),6(5XS),8(4XS),10(3XS),12(2XS),14(XS),S,M,L,XL,2XL">
+    <div class="card" data-size="XS,S,M,L,XL">
       <img src="100285.700 ROYAL.png" class="product-img">
       <h3>Felpa Faraon – Blu Royal</h3>
       <p>Codice articolo: 100285.700</p>
@@ -239,7 +236,7 @@
       <p class="price">€21 – prezzo affiliati</p>
       <a class="btn" href="#">ORDINA</a>
     </div>
-    <div class="card" data-size="4(6XS),6(5XS),8(4XS),10(3XS),12(2XS),14(XS),S,M,L,XL,2XL">
+    <div class="card" data-size="XS,S,M,L,XL">
       <img src="100285.300-faraon-navy.png" class="product-img">
       <h3>Felpa Faraon – Blu Navy</h3>
       <p>Codice articolo: 100285.300</p>
@@ -255,10 +252,10 @@
   const sizeButtons = document.querySelectorAll('.size-filter-bar button');
   const sections = document.querySelectorAll('section');
 
-  let activeSection = "tuta";
+  let activeSection = document.querySelector('.filter-bar button.active').dataset.target;
   let activeSize = "all";
 
-  // ---- FILTRO TIPOLOGIA ----
+  // FILTRO MODELLO
   typeButtons.forEach(button => {
     button.addEventListener('click', () => {
       typeButtons.forEach(btn => btn.classList.remove('active'));
@@ -270,11 +267,11 @@
         section.classList.toggle('active', section.id === activeSection);
       });
 
-      filterBySize(); // riapplica filtro taglia
+      filterBySize();
     });
   });
 
-  // ---- FILTRO TAGLIA ----
+  // FILTRO TAGLIA
   sizeButtons.forEach(button => {
     button.addEventListener('click', () => {
       sizeButtons.forEach(btn => btn.classList.remove('active'));
@@ -300,7 +297,7 @@
     });
   }
 
-  // ---- CONTATORI ----
+  // CONTATORI
   function updateCounts() {
     sections.forEach(section => {
       const cards = section.querySelectorAll('.card').length;
@@ -308,10 +305,8 @@
       if (span) span.textContent = cards;
     });
   }
-
   updateCounts();
 </script>
-
 
 </body>
 </html>
