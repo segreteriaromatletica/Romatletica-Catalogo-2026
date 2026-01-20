@@ -27,7 +27,6 @@
       font-size: 16px;
     }
 
-    /* Barra dei filtri */
     .filter-bar {
       position: sticky;
       top: 0;
@@ -38,32 +37,36 @@
       border-bottom: 1px solid #ddd;
       z-index: 100;
     }
-      .filter-bar button {
-        padding: 8px 16px;
-        border: none;
-        background-color: #004aad; /* blu Royal per i pulsanti normali */
-        color: white;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.3s;
-      }
-      
-      /* Pulsante attivo */
-      .filter-bar button.active {
-        background-color: #f7ff00; /* giallo fluorescente */
-        color: #004aad; /* testo blu Royal */
-        font-weight: bold; /* testo in grassetto */
-      }
+    .filter-bar button {
+      padding: 8px 16px;
+      border: none;
+      background-color: #004aad;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    .filter-bar button.active {
+      background-color: #f7ff00;
+      color: #004aad;
+      font-weight: bold;
+    }
 
     section {
-      display: none; /* tutte nascoste di default */
-      padding: 30px;
+      opacity: 0;
+      visibility: hidden;
+      height: 0;
+      overflow: hidden;
+      transition: opacity 0.4s ease;
+      padding: 0 30px;
     }
     section.active {
-      display: block; /* solo se attiva */
+      opacity: 1;
+      visibility: visible;
+      height: auto;
+      padding: 30px;
     }
-
     .card {
       background: white;
       padding: 20px;
@@ -126,19 +129,26 @@
 
 <!-- Barra dei filtri -->
 <div class="filter-bar">
-  <button data-target="tuta">Tuta di Rappresentanza</button>
-  <button data-target="viaggiare" class="active">Viaggiare Comodi</button>
-  <button data-target="felpe">Felpe con Logo</button>
+  <button data-target="tuta" class="active">
+    Tuta di Rappresentanza (<span id="count-tuta"></span>)
+  </button>
+  <button data-target="viaggiare">
+    Viaggiare Comodi (<span id="count-viaggiare"></span>)
+  </button>
+  <button data-target="felpe">
+    Felpe con Logo (<span id="count-felpe"></span>)
+  </button>
 </div>
 
-<!-- Sezioni filtrabili -->
-<section id="tuta">
+<!-- Sezioni -->
+
+<section id="tuta" class="active">
   <h2>LA NOSTRA TUTA DI RAPPRESENTANZA</h2>
   <div class="catalog-grid">
     <div class="card">
       <img src="100086.200-tuta-sopra.png" class="product-img">
       <h3>Felpa Gala - bianca</h3>
-      <p>Codice articolo:  100086.200</p>
+      <p>Codice articolo: 100086.200</p>
       <p>Taglie: 4(6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
       <p class="price">€20,5 – prezzo affiliati</p>
       <a class="btn" href="#">ORDINA</a>
@@ -154,13 +164,13 @@
   </div>
 </section>
 
-  <section id="viaggiare" class="active">
+<section id="viaggiare">
   <h2>VIAGGIARE COMODI</h2>
   <div class="catalog-grid">
     <div class="card">
       <img src="400234.700-zaino.png" class="product-img">
       <h3>Zaino Estadio III blu royal</h3>
-      <p>Codice articolo:  400234.700</p>
+      <p>Codice articolo: 400234.700</p>
       <p>Taglie: unica</p>
       <p class="price">€21,5 – prezzo affiliati</p>
       <a class="btn" href="#">ORDINA</a>
@@ -168,7 +178,7 @@
     <div class="card">
       <img src="400006.700-borsone.png" class="product-img">
       <h3>Borsa sportiva Training III blu royal</h3>
-      <p>Codice articolo:  400006.700</p>
+      <p>Codice articolo: 400006.700</p>
       <p>Misure: capacità 40 L · altezza 44cm · larghezza 45cm · profondità 27cm</p>
       <p class="price">€24 – prezzo affiliati</p>
       <a class="btn" href="#">ORDINA</a>
@@ -176,7 +186,6 @@
   </div>
 </section>
 
-  
 <section id="felpe">
   <h2>LE FELPE CON LOGO</h2>
   <div class="catalog-grid">
@@ -184,15 +193,15 @@
       <img src="100285.700 ROYAL.png" class="product-img">
       <h3>Felpa Faraon – Blu Royal</h3>
       <p>Codice articolo: 100285.700</p>
-      <p>Taglie: 4(6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
+      <p>Taglie: XS · S · M · L · XL</p>
       <p class="price">€21 – prezzo affiliati</p>
       <a class="btn" href="#">ORDINA</a>
     </div>
     <div class="card">
-      <img src=" 100285.300-faraon-navy.png" class="product-img">
+      <img src="100285.300-faraon-navy.png" class="product-img">
       <h3>Felpa Faraon – Blu Navy</h3>
       <p>Codice articolo: 100285.300</p>
-      <p>Taglie: 4(6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
+      <p>Taglie: XS · S · M · L · XL</p>
       <p class="price">€21 – prezzo affiliati</p>
       <a class="btn" href="#">ORDINA</a>
     </div>
@@ -203,23 +212,29 @@
   const buttons = document.querySelectorAll('.filter-bar button');
   const sections = document.querySelectorAll('section');
 
+  // --- GESTIONE CLICK FILTRI ---
   buttons.forEach(button => {
     button.addEventListener('click', () => {
-      // Toggle active button
       buttons.forEach(btn => btn.classList.remove('active'));
       button.classList.add('active');
 
-      // Toggle sections
       const target = button.getAttribute('data-target');
       sections.forEach(section => {
-        if (section.id === target) {
-          section.classList.add('active');
-        } else {
-          section.classList.remove('active');
-        }
+        section.classList.toggle('active', section.id === target);
       });
     });
   });
+
+  // --- CONTATORE PRODOTTI PER SEZIONE ---
+  function updateCounts() {
+    sections.forEach(section => {
+      const cards = section.querySelectorAll('.card').length;
+      const span = document.getElementById('count-' + section.id);
+      if (span) span.textContent = cards;
+    });
+  }
+
+  updateCounts();
 </script>
 
 </body>
