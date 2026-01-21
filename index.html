@@ -2,13 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Catalogo Romatletica 2026</title>
+
   <style>
     body {
       font-family: Calibri, sans-serif;
       margin: 0;
       background: #f4f4f4;
     }
+
+    /* HEADER */
     header {
       background: #ffffff;
       color: #222;
@@ -27,26 +31,6 @@
       font-size: 16px;
     }
 
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      text-align: left;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      opacity: 1;
-      transition: opacity 0.4s ease;
-    }
-    .card.hidden {
-      opacity: 0;
-      pointer-events: none; /* evita clic su elementi nascosti */
-      height: 0;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-    }
-
-    
     /* FILTRI MODELLO */
     .filter-bar {
       position: sticky;
@@ -66,7 +50,6 @@
       border-radius: 5px;
       cursor: pointer;
       font-size: 14px;
-      transition: all 0.3s;
     }
     .filter-bar button.active {
       background-color: #f7ff00;
@@ -77,7 +60,7 @@
     /* FILTRI TAGLIA */
     .size-filter-bar {
       position: sticky;
-      top: 52px; /* sotto barra modello */
+      top: 52px;
       background: #ffffff;
       padding: 6px 30px 10px 30px;
       display: flex;
@@ -93,7 +76,6 @@
       border-radius: 20px;
       cursor: pointer;
       font-size: 12px;
-      transition: all 0.25s;
     }
     .size-filter-bar button.active {
       background-color: #004aad;
@@ -107,8 +89,8 @@
       visibility: hidden;
       height: 0;
       overflow: hidden;
-      transition: opacity 0.4s ease;
       padding: 0 30px;
+      transition: opacity 0.3s ease;
     }
     section.active {
       opacity: 1;
@@ -117,15 +99,65 @@
       padding: 30px;
     }
 
+    /* GRIGLIA */
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
     /* CARD */
     .card {
       background: white;
       padding: 20px;
       border-radius: 10px;
-      margin-bottom: 20px;
       text-align: left;
       box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.3s ease, transform 0.3s ease;
     }
+
+    .card.hidden {
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    .product-img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #f8f8f8;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-size: 26px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 8px;
+    }
+
+    .card h3 {
+      font-size: 18px;
+      margin: 8px 0 4px 0;
+    }
+
+    .card p {
+      margin: 4px 0;
+      color: #444;
+      font-size: 14px;
+    }
+
+    .price {
+      font-weight: bold;
+      margin-top: 6px;
+    }
+
     .btn {
       display: inline-block;
       margin-top: 12px;
@@ -136,40 +168,31 @@
       border-radius: 4px;
       font-size: 14px;
     }
-    .product-img {
-      width: 100%;
-      max-height: 220px;
-      object-fit: contain;
-      border-radius: 6px;
-      background: #f8f8f8;
-      margin-bottom: 12px;
-    }
-    .catalog-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-    h2 {
-      font-size: 26px;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #ddd;
-      padding-bottom: 8px;
-    }
-    .card h3 {
-      font-size: 18px;
-      margin: 8px 0 4px 0;
-    }
-    .card p {
-      margin: 4px 0;
-      color: #444;
-      font-size: 14px;
-    }
-    .price {
-      font-weight: bold;
-      margin-top: 6px;
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      header {
+        padding: 20px;
+      }
+      header h1 {
+        font-size: 24px;
+      }
+      .filter-bar,
+      .size-filter-bar {
+        position: static;
+        flex-wrap: wrap;
+        padding: 10px;
+      }
+      section.active {
+        padding: 20px 15px;
+      }
+      .card.hidden {
+        transform: translateY(5px);
+      }
     }
   </style>
 </head>
+
 <body>
 
 <header>
@@ -177,47 +200,29 @@
   <p>Asd Romatletica in collaborazione con Joma</p>
 </header>
 
-<!-- FILTRI MODELLO -->
 <div class="filter-bar">
-  <button data-target="tuta" class="active">
-    Tuta di Rappresentanza (<span id="count-tuta"></span>)
-  </button>
-  <button data-target="viaggiare">
-    Viaggiare Comodi (<span id="count-viaggiare"></span>)
-  </button>
-  <button data-target="felpe">
-    Felpe con Logo (<span id="count-felpe"></span>)
-  </button>
+  <button data-target="tuta" class="active">Tuta</button>
+  <button data-target="viaggiare">Viaggiare</button>
+  <button data-target="felpe">Felpe</button>
 </div>
 
-<!-- FILTRI TAGLIA -->
 <div class="size-filter-bar">
   <button data-size="all" class="active">Tutte</button>
- <button data-size="XS">XS</button>
+  <button data-size="XS">XS</button>
   <button data-size="S">S</button>
   <button data-size="M">M</button>
   <button data-size="L">L</button>
   <button data-size="XL">XL</button>
 </div>
 
-<!-- SEZIONI -->
 <section id="tuta" class="active">
-  <h2>LA NOSTRA TUTA DI RAPPRESENTANZA</h2>
+  <h2>LA NOSTRA TUTA</h2>
   <div class="catalog-grid">
-    <div class="card" data-size="XS,S,M,L,XL,2XL">
+    <div class="card" data-size="XS,S,M,L,XL">
       <img src="100086.200-tuta-sopra.png" class="product-img">
-      <h3>Felpa Gala - bianca</h3>
-      <p>Codice articolo: 100086.200</p>
-      <p>Taglie: 4(6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
+      <h3>Felpa Gala – Bianca</h3>
+      <p>Codice: 100086.200</p>
       <p class="price">€20,5 – prezzo affiliati</p>
-      <a class="btn" href="#">ORDINA</a>
-    </div>
-    <div class="card" data-size="XS,S,M,L,XL,2XL">
-      <img src="100027.331-tuta-sotto.png" class="product-img">
-      <h3>Pantalone lungo uomo Staff blu navy</h3>
-      <p>Codice articolo: 100027.331</p>
-      <p>Taglie: 3(7XS) · 4(6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
-      <p class="price">€18 – prezzo affiliati</p>
       <a class="btn" href="#">ORDINA</a>
     </div>
   </div>
@@ -228,18 +233,9 @@
   <div class="catalog-grid">
     <div class="card" data-size="all">
       <img src="400234.700-zaino.png" class="product-img">
-      <h3>Zaino Estadio III blu royal</h3>
-      <p>Codice articolo: 400234.700</p>
-      <p>Taglie: unica</p>
+      <h3>Zaino Estadio III</h3>
+      <p>Codice: 400234.700</p>
       <p class="price">€21,5 – prezzo affiliati</p>
-      <a class="btn" href="#">ORDINA</a>
-    </div>
-    <div class="card" data-size="all">
-      <img src="400006.700-borsone.png" class="product-img">
-      <h3>Borsa sportiva Training III blu royal</h3>
-      <p>Codice articolo: 400006.700</p>
-      <p>Misure: capacità 40 L · altezza 44cm · larghezza 45cm · profondità 27cm</p>
-      <p class="price">€24 – prezzo affiliati</p>
       <a class="btn" href="#">ORDINA</a>
     </div>
   </div>
@@ -250,17 +246,8 @@
   <div class="catalog-grid">
     <div class="card" data-size="XS,S,M,L,XL">
       <img src="100285.700 ROYAL.png" class="product-img">
-      <h3>Felpa Faraon – Blu Royal</h3>
-      <p>Codice articolo: 100285.700</p>
-      <p>Taglie: XS · S · M · L · XL</p>
-      <p class="price">€21 – prezzo affiliati</p>
-      <a class="btn" href="#">ORDINA</a>
-    </div>
-    <div class="card" data-size="XS,S,M,L,XL">
-      <img src="100285.300-faraon-navy.png" class="product-img">
-      <h3>Felpa Faraon – Blu Navy</h3>
-      <p>Codice articolo: 100285.300</p>
-      <p>Taglie: XS · S · M · L · XL</p>
+      <h3>Felpa Faraon – Royal</h3>
+      <p>Codice: 100285.700</p>
       <p class="price">€21 – prezzo affiliati</p>
       <a class="btn" href="#">ORDINA</a>
     </div>
@@ -272,79 +259,46 @@
   const sizeButtons = document.querySelectorAll('.size-filter-bar button');
   const sections = document.querySelectorAll('section');
 
-  let activeSection = document.querySelector('.filter-bar button.active').dataset.target;
+  let activeSection = "tuta";
   let activeSize = "all";
 
-  // FILTRO MODELLO
   typeButtons.forEach(button => {
     button.addEventListener('click', () => {
-      typeButtons.forEach(btn => btn.classList.remove('active'));
+      typeButtons.forEach(b => b.classList.remove('active'));
       button.classList.add('active');
-
-      activeSection = button.getAttribute('data-target');
+      activeSection = button.dataset.target;
 
       sections.forEach(section => {
         section.classList.toggle('active', section.id === activeSection);
       });
-    
-          function filterBySize() {
-      const activeSec = document.getElementById(activeSection);
-      const cards = activeSec.querySelectorAll('.card');
-    
-      cards.forEach(card => {
-        const sizes = card.getAttribute('data-size');
-    
-        if (activeSize === "all" || sizes === "all" || sizes.includes(activeSize)) {
-          // mostra con fade
-          card.classList.remove('hidden');
-          setTimeout(() => {
-            card.style.display = "block";
-          }, 0);
-        } else {
-          // nascondi con fade
-          card.classList.add('hidden');
-          setTimeout(() => {
-            card.style.display = "none";
-          }, 400); // deve corrispondere alla durata transition
-        }
-      });
-    }
 
-  // FILTRO TAGLIA
+      filterBySize();
+    });
+  });
+
   sizeButtons.forEach(button => {
     button.addEventListener('click', () => {
-      sizeButtons.forEach(btn => btn.classList.remove('active'));
+      sizeButtons.forEach(b => b.classList.remove('active'));
       button.classList.add('active');
-
-      activeSize = button.getAttribute('data-size');
+      activeSize = button.dataset.size;
       filterBySize();
     });
   });
 
   function filterBySize() {
-    const activeSec = document.getElementById(activeSection);
-    const cards = activeSec.querySelectorAll('.card');
+    const cards = document
+      .getElementById(activeSection)
+      .querySelectorAll('.card');
 
     cards.forEach(card => {
-      const sizes = card.getAttribute('data-size');
-
+      const sizes = card.dataset.size;
       if (activeSize === "all" || sizes === "all" || sizes.includes(activeSize)) {
-        card.style.display = "block";
+        card.classList.remove('hidden');
       } else {
-        card.style.display = "none";
+        card.classList.add('hidden');
       }
     });
   }
-
-  // CONTATORI
-  function updateCounts() {
-    sections.forEach(section => {
-      const cards = section.querySelectorAll('.card').length;
-      const span = document.getElementById('count-' + section.id);
-      if (span) span.textContent = cards;
-    });
-  }
-  updateCounts();
 </script>
 
 </body>
