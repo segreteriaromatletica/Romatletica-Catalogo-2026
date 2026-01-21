@@ -357,7 +357,7 @@
 <section id="tuta" class="active">
   <h2>LA NOSTRA TUTA</h2>
   <div class="catalog-grid">
-    <div class="card" data-size="6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL">
+    <div class="card" data-size="6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL" data-personal="no">
       <img src="100086.200-tuta-sopra.png" class="product-img">
       <h3>Felpa Gala – Bianca</h3>
       <p>Codice: 100086.200</p>
@@ -365,7 +365,7 @@
       <p class="price">€20,5 – prezzo affiliati</p>
       <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
     </div>
-    <div class="card" data-size="7XS,6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL">
+    <div class="card" data-size="7XS,6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL" data-personal="no">
     <img src="100027.331-tuta-sotto.png" class="product-img">
     <h3>Pantalone lungo uomo Staff blu navy</h3>
     <p>Codice articolo: 100027.331</p>
@@ -379,14 +379,14 @@
 <section id="viaggiare">
   <h2>VIAGGIARE COMODI</h2>
   <div class="catalog-grid">
-    <div class="card" data-size="all">
+    <div class="card" data-size="all" data-personal="yes">
       <img src="400234.700-zaino.png" class="product-img">
       <h3>Zaino Estadio III</h3>
       <p>Codice: 400234.700</p>
       <p class="price">€21,5 – prezzo affiliati</p>
       <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
     </div>
-  <div class="card" data-size="all">
+  <div class="card" data-size="all" data-personal="yes">
       <img src="400006.700-borsone.png" class="product-img">
       <h3>Borsa sportiva Training III blu royal</h3>
       <p>Codice articolo: 400006.700</p>
@@ -402,7 +402,7 @@
 
   <div class="catalog-grid">
 
-    <div class="card" data-size="6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL">
+    <div class="card" data-size="6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL" data-personal="yes">
       <img src="100285.700 ROYAL.png" class="product-img">
       <h3>Felpa Faraon – Royal</h3>
       <p>Codice: 100285.700</p>
@@ -411,7 +411,7 @@
       <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
     </div>
 
-    <div class="card" data-size="6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL">
+    <div class="card" data-size="6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL" data-personal="yes">
       <img src="100285.300-faraon-navy.png" class="product-img">
       <h3>Felpa Faraon – Blu Navy</h3>
       <p>Codice articolo: 100285.300</p>
@@ -420,7 +420,7 @@
       <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
     </div>
 
-    <div class="card" data-size="2XS,XS,S,M,L,XL,2XL">
+    <div class="card" data-size="2XS,XS,S,M,L,XL,2XL" data-personal="yes">
       <img src="103826.700-felpa-cappuccio-elite.png" class="product-img">
       <h3>Felpa con cappuccio uomo Elite XI blu royal</h3>
       <p>Codice articolo: 103826.700</p>
@@ -429,7 +429,7 @@
       <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
     </div>
 
-    <div class="card" data-size="XS,S,M,L,XL">
+    <div class="card" data-size="XS,S,M,L,XL" data-personal="yes">
       <img src="902257.700-Lei-felpa-capp-elite.png" class="product-img">
       <h3>Giacca con cappuccio donna Elite XI blu royal</h3>
       <p>Codice articolo: 902257.700</p>
@@ -506,7 +506,7 @@
     
     function openOrder(btn) {
       selectedCard = btn.closest('.card');
-    
+      const isPersonal = selectedCard.dataset.personal || "no";
       const title = selectedCard.querySelector('h3').innerText;
       const sizes = selectedCard.dataset.size.split(',');
     
@@ -542,10 +542,6 @@
 
     <label>Quantità</label>
     <input type="number" id="orderQty" value="1" min="1">
-
-    <label>
-      <input type="checkbox" id="orderPersonal"> Personalizzazione
-    </label>
 
     <label>Nome ordinante</label>
     <input type="text" id="orderName">
