@@ -272,26 +272,6 @@
     }
 
     /* MOBILE */
-    @media (max-width: 768px) {
-  .catalog-grid {
-    grid-template-columns: 1fr;
-  }
-}
-      header h1 {
-        font-size: 24px;
-      }
-      .filter-bar,
-      .size-filter-bar {
-        position: static;
-        flex-wrap: wrap;
-        padding: 10px;
-      }
-      section.active {
-        padding: 20px 15px;
-      }
-      .card.hidden {
-        transform: translateY(5px);
-      }
       @media (max-width: 768px) {
       header {
         padding: 20px;
@@ -528,7 +508,64 @@
       document.getElementById('orderModal').style.display = 'none';
     }
 
-  
+const ORDERS_ENDPOINT = "INCOLLA_QUI_URL_WEBAPP_EXEC";
+
+function submitOrder() {
+  if (!selectedCard) return;
+
+  const nome = (document.getElementById("orderName").value || "").trim();
+  const taglia = document.getElementById("orderSize").value || "";
+  const quantita = Number(document.getElementById("orderQty").value || 0);
+
+  if (!nome) { alert("Inserisci il nome dell'ordinante."); return; }
+  if (!taglia) { alert("Seleziona una taglia."); return; }
+  if (!quantita || quantita < 1) { alert("Inserisci una quantità valida (>=1)."); return; }
+
+  // Articolo e codice
+  const articolo = selectedCard.querySelector("h3")?.innerText || "";
+
+  // prende il primo <p> della card (Codice: ... oppure Codice articolo: ...)
+  const codiceRaw = selectedCard.querySelector("p")?.innerText || "";
+  const codice = codiceRaw
+    .replace("Codice articolo:", "")
+    .replace("Codice:", "")
+    .trim();
+
+  // Categoria: attenzione, il bottone contiene anche "(<span ...>)"
+  // quindi prendiamo solo il testo e togliamo la parte tra parentesi
+  const catRaw = document.querySelector(".filter-bar button.active")?.innerText || "";
+  const categoria = catRaw.replace(/\s*\(.*\)\s*$/, "").trim();
+
+  // Personalizzazione decisa da te per articolo
+  const personalizzazione = selectedCard.dataset.personal || "no";
+
+  const payload = {
+    nome_ordinante: nome,
+    categoria: categoria,
+    codice: codice,
+    articolo: articolo,
+    taglia: taglia,
+    quantita: quantita,
+    personalizzazione: personalizzazione,
+    tipo_ordine: "CLIENTE"
+  };
+
+  fetch(ORDERS_ENDPOINT, {
+    method: "POST",
+    // evitiamo preflight CORS
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload)
+  })
+  .then(() => {
+    alert("Ordine inviato correttamente!");
+    closeModal();
+  })
+  .catch(() => {
+    alert("Errore nell'invio ordine. Riprova.");
+  });
+}
+
+
 </script>
 
   <div id="orderModal" class="modal">
@@ -551,7 +588,7 @@
       <button class="cancel" onclick="closeModal()">Annulla</button>
     </div>
 </div>
-
+</div>
   
 </body>
 </html>
