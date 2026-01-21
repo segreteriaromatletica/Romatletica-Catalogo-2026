@@ -11,6 +11,23 @@
       margin: 0;
       background: #f4f4f4;
     }
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+    }
 
     /* HEADER */
     header {
@@ -269,7 +286,7 @@
       <p>Codice: 100086.200</p>
       <p>Taglie: 4(6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
       <p class="price">€20,5 – prezzo affiliati</p>
-      <a class="btn" href="#">ORDINA</a>
+      <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
     </div>
     <div class="card" data-size="7XS,6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL">
     <img src="100027.331-tuta-sotto.png" class="product-img">
@@ -277,7 +294,7 @@
     <p>Codice articolo: 100027.331</p>
     <p>Taglie: 3(7XS) · 4(6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
     <p class="price">€18 – prezzo affiliati</p>
-    <a class="btn" href="#">ORDINA</a>
+    <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
     </div>
   </div>
 </section>
@@ -290,7 +307,7 @@
       <h3>Zaino Estadio III</h3>
       <p>Codice: 400234.700</p>
       <p class="price">€21,5 – prezzo affiliati</p>
-      <a class="btn" href="#">ORDINA</a>
+      <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
     </div>
   <div class="card" data-size="all">
       <img src="400006.700-borsone.png" class="product-img">
@@ -298,7 +315,7 @@
       <p>Codice articolo: 400006.700</p>
       <p>Misure: capacità 40 L · altezza 44cm · larghezza 45cm · profondità 27cm</p>
       <p class="price">€24 – prezzo affiliati</p>
-      <a class="btn" href="#">ORDINA</a>
+      <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
     </div>
   </div>
 </section>
@@ -314,7 +331,7 @@
       <p>Codice: 100285.700</p>
       <p>Taglie: (6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
       <p class="price">€21 – prezzo affiliati</p>
-      <a class="btn" href="#">ORDINA</a>
+      <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
     </div>
 
     <div class="card" data-size="6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL">
@@ -323,7 +340,7 @@
       <p>Codice articolo: 100285.300</p>
       <p>Taglie: (6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
       <p class="price">€21 – prezzo affiliati</p>
-      <a class="btn" href="#">ORDINA</a>
+      <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
     </div>
 
     <div class="card" data-size="2XS,XS,S,M,L,XL,2XL">
@@ -332,7 +349,7 @@
       <p>Codice articolo: 103826.700</p>
       <p>Taglie: 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
       <p class="price">€34 – prezzo affiliati</p>
-      <a class="btn" href="#">ORDINA</a>
+      <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
     </div>
 
     <div class="card" data-size="XS,S,M,L,XL">
@@ -341,7 +358,7 @@
       <p>Codice articolo: 902257.700</p>
       <p>Taglie: 14(XS) · S · M · L · XL · 2XL</p>
       <p class="price">€34 – prezzo affiliati</p>
-      <a class="btn" href="#">ORDINA</a>
+      <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
     </div>
 
   </div>
@@ -406,7 +423,61 @@
     });
   }
   updateCounts();
+    
+      // ===== ORDINA - MODALE =====
+    let selectedCard = null;
+    
+    function openOrder(btn) {
+      selectedCard = btn.closest('.card');
+    
+      const title = selectedCard.querySelector('h3').innerText;
+      const sizes = selectedCard.dataset.size.split(',');
+    
+      document.getElementById('modalProduct').innerText = title;
+    
+      const sizeSelect = document.getElementById('orderSize');
+      sizeSelect.innerHTML = '';
+      sizes.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        sizeSelect.appendChild(opt);
+      });
+    
+      document.getElementById('orderModal').style.display = 'flex';
+    }
+    
+    function closeModal() {
+      document.getElementById('orderModal').style.display = 'none';
+    }
+
+  
 </script>
 
+  <div id="orderModal" class="modal">
+  <div class="modal-content">
+    <h3>Ordina articolo</h3>
+
+    <p id="modalProduct"></p>
+
+    <label>Taglia</label>
+    <select id="orderSize"></select>
+
+    <label>Quantità</label>
+    <input type="number" id="orderQty" value="1" min="1">
+
+    <label>
+      <input type="checkbox" id="orderPersonal"> Personalizzazione
+    </label>
+
+    <label>Nome ordinante</label>
+    <input type="text" id="orderName">
+
+    <button onclick="submitOrder()">Conferma ordine</button>
+    <button onclick="closeModal()">Annulla</button>
+  </div>
+</div>
+
+  
 </body>
 </html>
