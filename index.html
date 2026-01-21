@@ -524,8 +524,7 @@ function submitOrder() {
     .replace("Codice:", "")
     .trim();
 
-  // Categoria: attenzione, il bottone contiene anche "(<span ...>)"
-  // quindi prendiamo solo il testo e togliamo la parte tra parentesi
+  // Categoria: il bottone contiene anche il contatore tra parentesi
   const catRaw = document.querySelector(".filter-bar button.active")?.innerText || "";
   const categoria = catRaw.replace(/\s*\(.*\)\s*$/, "").trim();
 
@@ -543,16 +542,17 @@ function submitOrder() {
     tipo_ordine: "CLIENTE"
   };
 
-fetch(ORDERS_ENDPOINT, {
-  method: "POST",
-  mode: "no-cors",
-  headers: { "Content-Type": "text/plain;charset=utf-8" },
-  body: JSON.stringify(payload)
-});
+  // Invio robusto (Safari/Chrome inclusi)
+  fetch(ORDERS_ENDPOINT, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload)
+  });
 
-alert("Ordine inviato!");
-closeModal();
-
+  alert("Ordine inviato!");
+  closeModal();
+}
 </script>
 
   <div id="orderModal" class="modal">
