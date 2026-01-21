@@ -355,6 +355,15 @@
       }
     });
   }
+    // CONTATORI
+  function updateCounts() {
+    sections.forEach(section => {
+      const cards = section.querySelectorAll('.card').length;
+      const span = document.getElementById('count-' + section.id);
+      if (span) span.textContent = cards;
+    });
+  }
+  updateCounts();
 </script>
 
 </body>
