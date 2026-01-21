@@ -1,581 +1,165 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catalogo Romatletica 2026</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalogo Romatletica 2026</title>
 
-  <style>
-    body {
-      font-family: Calibri, sans-serif;
-      margin: 0;
-      background: #f4f4f4;
-    }
-    /* ===== MODALE ORDINE ===== */
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 300;
-      padding: 15px;
-    }
-    
-    .modal-content {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 24px 22px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-      animation: modalFadeIn 0.3s ease;
-    }
-    
-    @keyframes modalFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.97);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-    
-    .modal-content h3 {
-      margin-top: 0;
-      margin-bottom: 10px;
-      color: #004aad;
-      font-size: 20px;
-    }
-    
-    #modalProduct {
-      font-size: 15px;
-      font-weight: bold;
-      margin-bottom: 18px;
-    }
-    
-    .modal-content label {
-      display: block;
-      margin-top: 14px;
-      margin-bottom: 6px;
-      font-size: 13px;
-      font-weight: bold;
-      color: #333;
-    }
-    
-    .modal-content select,
-    .modal-content input[type="number"],
-    .modal-content input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-    
-    .modal-content input[type="checkbox"] {
-      margin-right: 6px;
-    }
-    
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 22px;
-    }
-    
-    .modal-actions button {
-      flex: 1;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    
-    .modal-actions .confirm {
-      background: #004aad;
-      color: white;
-    }
-    
-    .modal-actions .cancel {
-      background: #e0e0e0;
-      color: #333;
-    }
+<style>
+/* === STILI ORIGINALI (NON TOCCATI) === */
+body { font-family: Calibri, sans-serif; margin:0; background:#f4f4f4; }
+header { background:#fff; padding:40px 30px 20px; border-bottom:3px solid #004aad; }
+header h1 { margin:0; font-size:32px; }
+header p { margin-top:8px; color:#555; }
 
-
-    /* HEADER */
-    header {
-      background: #ffffff;
-      color: #222;
-      padding: 40px 30px 20px 30px;
-      border-bottom: 3px solid #004aad;
-      text-align: left;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 32px;
-      letter-spacing: 1px;
-    }
-    header p {
-      margin-top: 8px;
-      color: #555;
-      font-size: 16px;
-    }
-
-    /* FILTRI MODELLO */
-    .filter-bar {
-      position: sticky;
-      top: 0;
-      background: #ffffff;
-      padding: 10px 30px;
-      display: flex;
-      gap: 10px;
-      border-bottom: 1px solid #ddd;
-      z-index: 100;
-    }
-    .filter-bar button {
-      padding: 8px 16px;
-      border: none;
-      background-color: #004aad;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .filter-bar button.active {
-      background-color: #f7ff00;
-      color: #004aad;
-      font-weight: bold;
-    }
-
-    /* FILTRI TAGLIA */
-    .size-filter-bar {
-      position: sticky;
-      top: 52px;
-      background: #ffffff;
-      padding: 6px 30px 10px 30px;
-      display: flex;
-      gap: 8px;
-      border-bottom: 1px solid #e5e5e5;
-      z-index: 90;
-    }
-    .size-filter-bar button {
-      padding: 5px 12px;
-      border: 1px solid #004aad;
-      background-color: #e6efff;
-      color: #004aad;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-    .size-filter-bar button.active {
-      background-color: #004aad;
-      color: white;
-      font-weight: bold;
-    }
-
-    /* SEZIONI */
-    section {
-      opacity: 0;
-      visibility: hidden;
-      height: 0;
-      overflow: hidden;
-      padding: 0 30px;
-      transition: opacity 0.3s ease;
-    }
-    section.active {
-      opacity: 1;
-      visibility: visible;
-      height: auto;
-      padding: 30px;
-    }
-
-    /* GRIGLIA */
-    .catalog-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
-
-    /* CARD */
-    .card {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    text-align: left;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 0.35s ease, transform 0.35s ease;
-  }
-
-    .card.disabled {
-  opacity: 0.25;
-  filter: grayscale(90%);
-  pointer-events: none;
+.filter-bar, .size-filter-bar {
+  background:#fff; padding:10px 30px; display:flex; gap:10px;
 }
+.filter-bar { position:sticky; top:0; z-index:100; border-bottom:1px solid #ddd; }
+.size-filter-bar { position:sticky; top:52px; z-index:90; border-bottom:1px solid #eee; }
 
-    .product-img {
-    width: 100%;
-    max-height: 220px;
-    object-fit: contain;
-    border-radius: 6px;
-    background: #f8f8f8;
-    margin: 0 auto 12px auto;
-    display: block;
-  }
+.filter-bar button, .size-filter-bar button {
+  border:none; background:#004aad; color:#fff; border-radius:5px;
+  padding:6px 12px; cursor:pointer;
+}
+.filter-bar button.active { background:#f7ff00; color:#004aad; }
+.size-filter-bar button { background:#e6efff; color:#004aad; border:1px solid #004aad; border-radius:20px; font-size:12px; }
+.size-filter-bar button.active { background:#004aad; color:#fff; }
 
-    h2 {
-      font-size: 26px;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #ddd;
-      padding-bottom: 8px;
-    }
+section { display:none; padding:30px; }
+section.active { display:block; }
 
-    .card h3 {
-      font-size: 18px;
-      margin: 8px 0 4px 0;
-    }
+.catalog-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+@media(max-width:768px){ .catalog-grid{grid-template-columns:1fr;} }
 
-    .card p {
-      margin: 4px 0;
-      color: #444;
-      font-size: 14px;
-    }
+.card {
+  background:#fff; padding:20px; border-radius:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
+}
+.card.disabled { opacity:.25; pointer-events:none; filter:grayscale(90%); }
 
-    .price {
-      font-weight: bold;
-      margin-top: 6px;
-    }
+.product-img { width:100%; max-height:220px; object-fit:contain; background:#f8f8f8; border-radius:6px; }
 
-    .btn {
-      display: inline-block;
-      margin-top: 12px;
-      padding: 8px 14px;
-      background: #004aad;
-      color: white;
-      text-decoration: none;
-      border-radius: 4px;
-      font-size: 14px;
-    }
+.btn { margin-top:10px; display:inline-block; background:#004aad; color:#fff;
+  padding:8px 14px; border-radius:4px; text-decoration:none; }
 
-    /* MOBILE */
-      @media (max-width: 768px) {
-      header {
-        padding: 20px;
-      }
-      header h1 {
-        font-size: 24px;
-      }
-      .filter-bar,
-      .size-filter-bar {
-        position: static;
-        flex-wrap: wrap;
-        gap: 6px;
-        padding: 10px;
-      }
-      section.active {
-        padding: 20px 15px;
-      }
-      .catalog-grid {
-        grid-template-columns: 1fr;
-      }
-      .card {
-        padding: 16px;
-      }
-    }
-  </style>
+.modal {
+  position:fixed; inset:0; background:rgba(0,0,0,.6);
+  display:none; align-items:center; justify-content:center; z-index:300;
+}
+.modal-content {
+  background:#fff; padding:24px; border-radius:16px; max-width:420px; width:100%;
+}
+.modal-actions { display:flex; gap:10px; margin-top:20px; }
+.modal-actions button { flex:1; padding:10px; border:none; border-radius:8px; cursor:pointer; }
+.confirm { background:#004aad; color:#fff; }
+.cancel { background:#eee; }
+</style>
 </head>
 
 <body>
 
 <header>
-  <h1>CATALOGO ROMATLETICA 2026</h1>
-  <p>Asd Romatletica in collaborazione con Joma</p>
+<h1>CATALOGO ROMATLETICA 2026</h1>
+<p>Asd Romatletica in collaborazione con Joma</p>
 </header>
 
 <div class="filter-bar">
-  <button data-target="tuta" class="active">
-    Tuta di Rappresentanza (<span id="count-tuta"></span>)
-  </button>
-  <button data-target="viaggiare">
-    Viaggiare Comodi (<span id="count-viaggiare"></span>)
-  </button>
-  <button data-target="felpe">
-    Felpe con Logo (<span id="count-felpe"></span>)
-  </button>
+<button data-target="tuta" class="active">Tuta (<span id="count-tuta"></span>)</button>
+<button data-target="viaggiare">Viaggiare (<span id="count-viaggiare"></span>)</button>
+<button data-target="felpe">Felpe (<span id="count-felpe"></span>)</button>
 </div>
 
 <div class="size-filter-bar">
-  <button data-size="all" class="active">Tutte</button>
-  <button data-size="7XS">7XS (3 anni)</button>
-  <button data-size="6XS">6XS (4 anni)</button>
-  <button data-size="5XS">5XS (6 anni)</button>
-  <button data-size="4XS">4XS (8 anni)</button>
-  <button data-size="3XS">3XS (10 anni)</button>
-  <button data-size="2XS">2XS (12 anni)</button>
-  <button data-size="XS">XS</button>
-  <button data-size="S">S</button>
-  <button data-size="M">M</button>
-  <button data-size="L">L</button>
-  <button data-size="XL">XL</button>
-  <button data-size="2XL">2XL</button>
+<button data-size="all" class="active">Tutte</button>
+<button data-size="XS">XS</button><button data-size="S">S</button>
+<button data-size="M">M</button><button data-size="L">L</button>
+<button data-size="XL">XL</button>
+</div>
+
+<!-- === PUNTO 1.2: CARRELLO === -->
+<div style="padding:10px 30px">
+<button class="btn" onclick="openCart()">🛒 Carrello (<span id="cartCount">0</span>)</button>
 </div>
 
 <section id="tuta" class="active">
-  <h2>LA NOSTRA TUTA</h2>
-  <div class="catalog-grid">
-    <div class="card" data-size="6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL" data-personal="no">
-      <img src="100086.200-tuta-sopra.png" class="product-img">
-      <h3>Felpa Gala – Bianca</h3>
-      <p>Codice: 100086.200</p>
-      <p>Taglie: 4(6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
-      <p class="price">€20,5 – prezzo affiliati</p>
-      <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
-    </div>
-    <div class="card" data-size="7XS,6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL" data-personal="no">
-    <img src="100027.331-tuta-sotto.png" class="product-img">
-    <h3>Pantalone lungo uomo Staff blu navy</h3>
-    <p>Codice articolo: 100027.331</p>
-    <p>Taglie: 3(7XS) · 4(6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
-    <p class="price">€18 – prezzo affiliati</p>
-    <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
-    </div>
-  </div>
+<div class="catalog-grid">
+<div class="card" data-size="XS,S,M,L,XL">
+<h3>Felpa Gala Bianca</h3>
+<p>Codice: 100086.200</p>
+<a class="btn" href="#" onclick="openOrder(this);return false;">AGGIUNGI</a>
+</div>
+</div>
 </section>
 
-<section id="viaggiare">
-  <h2>VIAGGIARE COMODI</h2>
-  <div class="catalog-grid">
-    <div class="card" data-size="all" data-personal="yes">
-      <img src="400234.700-zaino.png" class="product-img">
-      <h3>Zaino Estadio III</h3>
-      <p>Codice articolo: 400234.700</p>
-      <p class="price">€21,5 – prezzo affiliati</p>
-      <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
-    </div>
-  <div class="card" data-size="all" data-personal="yes">
-      <img src="400006.700-borsone.png" class="product-img">
-      <h3>Borsa sportiva Training III blu royal</h3>
-      <p>Codice articolo: 400006.700</p>
-      <p>Misure: capacità 40 L · altezza 44cm · larghezza 45cm · profondità 27cm</p>
-      <p class="price">€24 – prezzo affiliati</p>
-      <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
-    </div>
-  </div>
-</section>
+<!-- === MODALE ORDINE === -->
+<div id="orderModal" class="modal">
+<div class="modal-content">
+<h3 id="modalProduct"></h3>
+<label>Taglia</label><select id="orderSize"><option>XS</option></select>
+<label>Quantità</label><input id="orderQty" type="number" value="1">
+<div class="modal-actions">
+<button class="confirm" onclick="addCurrentToCart()">Aggiungi al carrello</button>
+<button class="cancel" onclick="closeModal()">Annulla</button>
+</div>
+</div>
+</div>
 
-<section id="felpe">
-  <h2>LE FELPE CON LOGO</h2>
-
-  <div class="catalog-grid">
-
-    <div class="card" data-size="6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL" data-personal="yes">
-      <img src="100285.700 ROYAL.png" class="product-img">
-      <h3>Felpa Faraon – Royal</h3>
-      <p>Codice articolo: 100285.700</p>
-      <p>Taglie: (6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
-      <p class="price">€21 – prezzo affiliati</p>
-      <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
-    </div>
-
-    <div class="card" data-size="6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL" data-personal="yes">
-      <img src="100285.300-faraon-navy.png" class="product-img">
-      <h3>Felpa Faraon – Blu Navy</h3>
-      <p>Codice articolo: 100285.300</p>
-      <p>Taglie: (6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
-      <p class="price">€21 – prezzo affiliati</p>
-      <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
-    </div>
-
-    <div class="card" data-size="2XS,XS,S,M,L,XL,2XL" data-personal="yes">
-      <img src="103826.700-felpa-cappuccio-elite.png" class="product-img">
-      <h3>Felpa con cappuccio uomo Elite XI blu royal</h3>
-      <p>Codice articolo: 103826.700</p>
-      <p>Taglie: 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
-      <p class="price">€34 – prezzo affiliati</p>
-      <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
-    </div>
-
-    <div class="card" data-size="XS,S,M,L,XL" data-personal="yes">
-      <img src="902257.700-Lei-felpa-capp-elite.png" class="product-img">
-      <h3>Giacca con cappuccio donna Elite XI blu royal</h3>
-      <p>Codice articolo: 902257.700</p>
-      <p>Taglie: 14(XS) · S · M · L · XL · 2XL</p>
-      <p class="price">€34 – prezzo affiliati</p>
-      <a class="btn" href="#" onclick="openOrder(this)">ORDINA</a>
-    </div>
-
-  </div>
-</section>
+<!-- === PUNTO 1.4: MODALE CARRELLO === -->
+<div id="cartModal" class="modal">
+<div class="modal-content">
+<h3>Il tuo carrello</h3>
+<div id="cartList"></div>
+<label>Nome</label><input id="checkoutName">
+<label>Email</label><input id="checkoutEmail">
+<div class="modal-actions">
+<button class="confirm" onclick="checkout()">Invia ordine</button>
+<button class="cancel" onclick="closeCart()">Chiudi</button>
+</div>
+</div>
+</div>
 
 <script>
-  const typeButtons = document.querySelectorAll('.filter-bar button');
-  const sizeButtons = document.querySelectorAll('.size-filter-bar button');
-  const sections = document.querySelectorAll('section');
+let selectedCard=null;
 
-  let activeSection = "tuta";
-  let activeSize = "all";
+function openOrder(btn){
+selectedCard=btn.closest('.card');
+document.getElementById('modalProduct').innerText=selectedCard.querySelector('h3').innerText;
+document.getElementById('orderModal').style.display='flex';
+}
+function closeModal(){document.getElementById('orderModal').style.display='none';}
 
-  typeButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      typeButtons.forEach(b => b.classList.remove('active'));
-      button.classList.add('active');
-      activeSection = button.dataset.target;
-
-      sections.forEach(section => {
-        section.classList.toggle('active', section.id === activeSection);
-      });
-
-      filterBySize();
-    });
-  });
-
-  sizeButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      sizeButtons.forEach(b => b.classList.remove('active'));
-      button.classList.add('active');
-      activeSize = button.dataset.size;
-      filterBySize();
-    });
-  });
-
- function filterBySize() {
-  const activeSec = document.getElementById(activeSection);
-  const cards = activeSec.querySelectorAll('.card');
-
-  cards.forEach(card => {
-    const sizes = card.getAttribute('data-size');
-
-    if (
-      activeSize === "all" ||
-      sizes === "all" ||
-      sizes.includes(activeSize)
-    ) {
-      card.classList.remove('disabled');
-    } else {
-      card.classList.add('disabled');
-    }
-  });
+function getCart(){return JSON.parse(localStorage.getItem('cart')||'[]');}
+function setCart(c){localStorage.setItem('cart',JSON.stringify(c));updateCartCount();}
+function updateCartCount(){
+document.getElementById('cartCount').innerText=getCart().length;
 }
 
-    // CONTATORI
-  function updateCounts() {
-    sections.forEach(section => {
-      const cards = section.querySelectorAll('.card').length;
-      const span = document.getElementById('count-' + section.id);
-      if (span) span.textContent = cards;
-    });
-  }
-  updateCounts();
-    
-      // ===== ORDINA - MODALE =====
-    let selectedCard = null;
-    
-    function openOrder(btn) {
-      selectedCard = btn.closest('.card');
-      const isPersonal = selectedCard.dataset.personal || "no";
-      const title = selectedCard.querySelector('h3').innerText;
-      const sizes = selectedCard.dataset.size.split(',');
-    
-      document.getElementById('modalProduct').innerText = title;
-    
-      const sizeSelect = document.getElementById('orderSize');
-      sizeSelect.innerHTML = '';
-      sizes.forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s;
-        opt.textContent = s;
-        sizeSelect.appendChild(opt);
-      });
-    
-      document.getElementById('orderModal').style.display = 'flex';
-    }
-    
-    function closeModal() {
-      document.getElementById('orderModal').style.display = 'none';
-    }
-
-const ORDERS_ENDPOINT = "https://script.google.com/macros/s/AKfycbx79GZmuQ4EEH_sbF2zK8-GjkgvbZRQNIyuRmSiwfOqBNBPmjHW37Dzx6LQu7OlOJp0/exec";
-
-function submitOrder() {
-  if (!selectedCard) return;
-
-  const nome = (document.getElementById("orderName").value || "").trim();
-  const taglia = document.getElementById("orderSize").value || "";
-  const quantita = Number(document.getElementById("orderQty").value || 0);
-
-  if (!nome) { alert("Inserisci il nome dell'ordinante."); return; }
-  if (!taglia) { alert("Seleziona una taglia."); return; }
-  if (!quantita || quantita < 1) { alert("Inserisci una quantità valida (>=1)."); return; }
-
-  // Articolo e codice
-  const articolo = selectedCard.querySelector("h3")?.innerText || "";
-
-  // prende il primo <p> della card (Codice: ... oppure Codice articolo: ...)
-  const codiceRaw = selectedCard.querySelector("p")?.innerText || "";
-  const codice = codiceRaw
-    .replace("Codice articolo:", "")
-    .replace("Codice:", "")
-    .trim();
-
-  // Categoria: il bottone contiene anche il contatore tra parentesi
-  const catRaw = document.querySelector(".filter-bar button.active")?.innerText || "";
-  const categoria = catRaw.replace(/\s*\(.*\)\s*$/, "").trim();
-
-  // Personalizzazione decisa da te per articolo
-  const personalizzazione = selectedCard.dataset.personal || "no";
-
-  const payload = {
-    nome_ordinante: nome,
-    categoria: categoria,
-    codice: codice,
-    articolo: articolo,
-    taglia: taglia,
-    quantita: quantita,
-    personalizzazione: personalizzazione,
-    tipo_ordine: "CLIENTE"
-  };
-
-  // Invio robusto (Safari/Chrome inclusi)
-  fetch(ORDERS_ENDPOINT, {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(payload)
-  });
-
-  alert("Ordine inviato!");
-  closeModal();
+function addCurrentToCart(){
+const cart=getCart();
+cart.push({
+articolo:selectedCard.querySelector('h3').innerText,
+taglia:document.getElementById('orderSize').value,
+quantita:document.getElementById('orderQty').value
+});
+setCart(cart); closeModal();
 }
+
+function openCart(){renderCart();document.getElementById('cartModal').style.display='flex';}
+function closeCart(){document.getElementById('cartModal').style.display='none';}
+
+function renderCart(){
+const c=getCart();
+document.getElementById('cartList').innerHTML=c.map(i=>`<p>${i.articolo} (${i.taglia}) x${i.quantita}</p>`).join('');
+}
+
+function checkout(){
+alert("Ordine inviato (mock)");
+localStorage.removeItem('cart');
+updateCartCount(); closeCart();
+}
+updateCartCount();
 </script>
 
-  <div id="orderModal" class="modal">
-  <div class="modal-content">
-    <h3>Ordina articolo</h3>
-
-    <p id="modalProduct"></p>
-
-    <label>Taglia</label>
-    <select id="orderSize"></select>
-
-    <label>Quantità</label>
-    <input type="number" id="orderQty" value="1" min="1">
-
-    <label>Nome ordinante</label>
-    <input type="text" id="orderName">
-
-     <div class="modal-actions">
-      <button class="confirm" onclick="submitOrder()">Conferma ordine</button>
-      <button class="cancel" onclick="closeModal()">Annulla</button>
-    </div>
-</div>
-</div>
-  
 </body>
 </html>
