@@ -219,13 +219,6 @@
   filter: grayscale(90%);
   pointer-events: none;
 }
-    
-  .card.hidden {
-    opacity: 0;
-    transform: translateY(10px);
-    pointer-events: none;
-    visibility: hidden;
-  }
 
     .product-img {
     width: 100%;
@@ -508,7 +501,7 @@
       document.getElementById('orderModal').style.display = 'none';
     }
 
-const ORDERS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyGFFIR8t_CTu8OCu-IdC7qUa8crsWz5pAOHv76_UlajG5YW86DnB2-cCxyiaUiqZaU/exec";
+const ORDERS_ENDPOINT = "https://script.google.com/macros/library/d/1PKN6JbsIPZhby-UU1dvINfOgftpJDKd6dFyhF0QzkioRd5nDjbvQApsg/1";
 
 function submitOrder() {
   if (!selectedCard) return;
