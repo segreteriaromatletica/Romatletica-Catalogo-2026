@@ -108,32 +108,34 @@
 
     /* CARD */
     .card {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: left;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: left;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
 
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-
-    .card.hidden {
-      opacity: 0;
-      transform: translateY(10px);
-      pointer-events: none;
-      visibility: hidden;
-    }
+  .card.hidden {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    visibility: hidden;
+  }
 
     .product-img {
-      width: 100%;
-      max-height: 220px;
-      object-fit: contain;
-      border-radius: 6px;
-      background: #f8f8f8;
-      margin-bottom: 12px;
-    }
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+    border-radius: 6px;
+    background: #f8f8f8;
+    margin: 0 auto 12px auto;
+    display: block;
+  }
 
     h2 {
       font-size: 26px;
@@ -188,6 +190,29 @@
       }
       .card.hidden {
         transform: translateY(5px);
+      }
+      @media (max-width: 768px) {
+      header {
+        padding: 20px;
+      }
+      header h1 {
+        font-size: 24px;
+      }
+      .filter-bar,
+      .size-filter-bar {
+        position: static;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 10px;
+      }
+      section.active {
+        padding: 20px 15px;
+      }
+      .catalog-grid {
+        grid-template-columns: 1fr;
+      }
+      .card {
+        padding: 16px;
       }
     }
   </style>
