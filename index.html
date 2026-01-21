@@ -120,6 +120,12 @@
     transition: opacity 0.35s ease, transform 0.35s ease;
   }
 
+    .card.disabled {
+  opacity: 0.25;
+  filter: grayscale(90%);
+  pointer-events: none;
+}
+    
   .card.hidden {
     opacity: 0;
     transform: translateY(10px);
@@ -350,20 +356,25 @@
     });
   });
 
-  function filterBySize() {
-    const cards = document
-      .getElementById(activeSection)
-      .querySelectorAll('.card');
+ function filterBySize() {
+  const activeSec = document.getElementById(activeSection);
+  const cards = activeSec.querySelectorAll('.card');
 
-    cards.forEach(card => {
-      const sizes = card.dataset.size;
-      if (activeSize === "all" || sizes === "all" || sizes.includes(activeSize)) {
-        card.classList.remove('hidden');
-      } else {
-        card.classList.add('hidden');
-      }
-    });
-  }
+  cards.forEach(card => {
+    const sizes = card.getAttribute('data-size');
+
+    if (
+      activeSize === "all" ||
+      sizes === "all" ||
+      sizes.includes(activeSize)
+    ) {
+      card.classList.remove('disabled');
+    } else {
+      card.classList.add('disabled');
+    }
+  });
+}
+
     // CONTATORI
   function updateCounts() {
     sections.forEach(section => {
