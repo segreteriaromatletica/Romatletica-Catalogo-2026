@@ -11,23 +11,100 @@
       margin: 0;
       background: #f4f4f4;
     }
+    /* ===== MODALE ORDINE ===== */
     .modal {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.65);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 200;
+      z-index: 300;
+      padding: 15px;
     }
     
     .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 400px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px 22px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      animation: modalFadeIn 0.3s ease;
     }
+    
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
+    .modal-content h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #004aad;
+      font-size: 20px;
+    }
+    
+    #modalProduct {
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 18px;
+    }
+    
+    .modal-content label {
+      display: block;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .modal-content select,
+    .modal-content input[type="number"],
+    .modal-content input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    
+    .modal-content input[type="checkbox"] {
+      margin-right: 6px;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+    }
+    
+    .modal-actions button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    
+    .modal-actions .confirm {
+      background: #004aad;
+      color: white;
+    }
+    
+    .modal-actions .cancel {
+      background: #e0e0e0;
+      color: #333;
+    }
+
 
     /* HEADER */
     header {
@@ -473,9 +550,10 @@
     <label>Nome ordinante</label>
     <input type="text" id="orderName">
 
-    <button onclick="submitOrder()">Conferma ordine</button>
-    <button onclick="closeModal()">Annulla</button>
-  </div>
+     <div class="modal-actions">
+      <button class="confirm" onclick="submitOrder()">Conferma ordine</button>
+      <button class="cancel" onclick="closeModal()">Annulla</button>
+    </div>
 </div>
 
   
