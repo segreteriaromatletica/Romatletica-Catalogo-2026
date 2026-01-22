@@ -786,80 +786,69 @@
   let checkoutLocked = false;
 
 async function checkout() {
-  if (checkoutLocked) return; // blocco anti doppio click
+  if (checkoutLocked) return;
   checkoutLocked = true;
 
   const btn = document.getElementById("checkoutBtn");
-  const oldText = btn ? btn.textContent : "";
-
   if (btn) {
     btn.disabled = true;
-    btn.style.opacity = "0.7";
-    btn.style.cursor = "not-allowed";
     btn.textContent = "Invio in corso...";
+    btn.style.opacity = "0.7";
   }
 
-  // paracadute: anche se qualcosa va storto, dopo 12s sblocca
-  const safetyTimer = setTimeout(() => {
-    checkoutLocked = false;
-    if (btn) {
-      btn.disabled = false;
-      btn.style.opacity = "1";
-      btn.style.cursor = "pointer";
-      btn.textContent = oldText || "Invia ordine";
-    }
-  }, 12000);
+  const cart = getCart();
+  if (cart.length === 0) {
+    alert("Carrello vuoto.");
+    resetCheckout(btn);
+    return;
+  }
+
+  const nome = (document.getElementById("checkoutName").value || "").trim();
+  const email = (document.getElementById("checkoutEmail").value || "").trim();
+
+  if (!nome || !email || !email.includes("@")) {
+    alert("Inserisci nome ed email validi.");
+    resetCheckout(btn);
+    return;
+  }
+
+  const payload = {
+    nome_ordinante: nome,
+    email: email,
+    tipo_ordine: "CLIENTE",
+    items: cart
+  };
 
   try {
-    const cart = getCart();
-    if (cart.length === 0) { alert("Carrello vuoto."); throw new Error("cart vuoto"); }
-
-    const nome = (document.getElementById("checkoutName").value || "").trim();
-    const email = (document.getElementById("checkoutEmail").value || "").trim();
-
-    if (!nome) { alert("Inserisci il nome ordinante."); throw new Error("nome mancante"); }
-    if (!email || !email.includes("@")) { alert("Inserisci una email valida."); throw new Error("email non valida"); }
-
-    const payload = {
-      nome_ordinante: nome,
-      email: email,
-      tipo_ordine: "CLIENTE",
-      items: cart
-    };
-
-    // Nota: su Apps Script spesso non puoi leggere la risposta (CORS),
-    // ma l'invio va comunque. Quindi qui facciamo invio "semplice".
-    await fetch(ORDERS_ENDPOINT, {
+    const res = await fetch(ORDERS_ENDPOINT, {
       method: "POST",
-      mode: "no-cors",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload)
     });
 
-    alert("Ordine inviato! Ti arriverà una mail di riepilogo (se l'email è corretta).");
+    const json = await res.json();
 
-    setCart([]);
-    document.getElementById("checkoutName").value = "";
-    document.getElementById("checkoutEmail").value = "";
-    closeCart();
+    if (json && json.ok) {
+      showOrderSuccess(json.orderId || "");
+      setCart([]);
+    } else {
+      alert("Ordine inviato, ma senza conferma visiva.");
+      resetCheckout(btn);
+    }
 
   } catch (err) {
-    // se errore: sblocca subito
-    checkoutLocked = false;
-    if (btn) {
-      btn.disabled = false;
-      btn.style.opacity = "1";
-      btn.style.cursor = "pointer";
-      btn.textContent = oldText || "Invia ordine";
-    }
-    clearTimeout(safetyTimer);
-    // se vuoi, puoi mostrare un messaggio più specifico:
-    // alert("Errore durante l'invio. Riprova.");
-    return;
+    alert("Errore di rete. Riprova.");
+    resetCheckout(btn);
   }
+}
 
-  // se tutto ok: lasciamo il bottone disabilitato finché chiudi (o safetyTimer)
-  clearTimeout(safetyTimer);
+function resetCheckout(btn) {
+  checkoutLocked = false;
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = "Invia ordine";
+    btn.style.opacity = "1";
+  }
 }
 
 
@@ -905,6 +894,15 @@ async function checkout() {
 <div id="cartModal" class="modal">
   <div class="modal-content">
     <h3>Il tuo carrello</h3>
+    <div id="orderSuccessBox" style="display:none;
+    background:#e9f5ff;
+    border:1px solid #004aad;
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:12px;
+    color:#004aad;
+    font-size:14px;">
+    </div>
     <div id="cartList" style="font-size:14px; margin: 10px 0;"></div>
 
     <label>Nome ordinante</label>
