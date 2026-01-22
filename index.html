@@ -613,7 +613,12 @@
 
     const personalizzazione = selectedCard.dataset.personal || "no";
 
-    const item = { categoria, codice, articolo, taglia, quantita, personalizzazione };
+    const prezzoUnit = Number(selectedCard.dataset.price || 0);
+
+    const item = {
+      categoria, codice, articolo, taglia, quantita, personalizzazione,
+      prezzo_unitario: prezzoUnit
+    };
 
     const cart = getCart();
     const existing = cart.find(x => x.codice === item.codice && x.taglia === item.taglia);
