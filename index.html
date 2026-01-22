@@ -11,6 +11,20 @@
       margin: 0;
       background: #f4f4f4;
     }
+    /* FIX overflow campi nei popup (Safari/Chrome mobile) */
+    *, *::before, *::after { box-sizing: border-box; }
+    
+    .modal-content { overflow: hidden; } /* evita sbordi visivi */
+    
+    .modal-content select,
+    .modal-content input[type="number"],
+    .modal-content input[type="text"],
+    .modal-content input[type="email"] {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
     /* ===== MODALE ORDINE ===== */
     .modal {
       position: fixed;
