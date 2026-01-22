@@ -300,6 +300,7 @@
   <button data-target="pantaloni">Pantaloni (<span id="count-pantaloni"></span>)</button>
   <button data-target="mezza_stagione">Mezza Stagione (<span id="count-mezza_stagione"></span>)</button>
   <button data-target="caldo">Tenersi al caldo (<span id="count-caldo"></span>)</button>
+  <button data-target="piove">Anche se piove (<span id="count-piove"></span>)</button>
 </div>
 
 <div class="size-filter-bar">
@@ -692,7 +693,8 @@
       <a class="btn" href="#" onclick="openOrder(this); return false;">AGGIUNGI</a>
     </div>
   </div>
-
+</section>
+  
   <section id="caldo">
   <h2>Tenersi al caldo</h2>
   <div class="catalog-grid">
@@ -714,9 +716,38 @@
       <p class="price">€24 – prezzo affiliati</p>
       <a class="btn" href="#" onclick="openOrder(this); return false;">AGGIUNGI</a>
     </div>
-  </div> 
   
-<script>
+  </div> 
+</section>
+
+  <section id="piove">
+  <h2>Anche se piove</h2>
+  <div class="catalog-grid">
+    
+    <div class="card" data-size="6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL" data-personal="yes" data-price="20">
+      <img src="104796.700-kway-royal" class="product-img">
+      <h3>Antipioggia uomo Rain blu royal</h3>
+      <p>Codice articolo: 104796.700</p>
+      <p>Taglie:4(6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
+      <p class="price">€20 – prezzo affiliati</p>
+      <a class="btn" href="#" onclick="openOrder(this); return false;">AGGIUNGI</a>
+    </div>
+
+    <div class="card" data-size="2XS,XS,S,M,L,XL,2XL" data-personal="yes" data-price="20">
+      <img src="902870.500-kway-donna-fluo.png" class="product-img">
+      <h3>Antipioggia donna Rain fluo</h3>
+      <p>Codice articolo: 902870.500</p>
+      <p>Taglie:12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
+      <p class="price">€20 – prezzo affiliati</p>
+      <a class="btn" href="#" onclick="openOrder(this); return false;">AGGIUNGI</a>
+    </div>
+
+  </div>
+ </section>
+  
+  
+  
+  <script>
   const typeButtons = document.querySelectorAll('.filter-bar button');
   const sizeButtons = document.querySelectorAll('.size-filter-bar button');
   const sections = document.querySelectorAll('section');
