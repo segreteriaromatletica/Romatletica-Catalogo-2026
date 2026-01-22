@@ -272,7 +272,18 @@
       border-radius: 4px;
       font-size: 14px;
     }
-
+      /* Popup istruzioni ancorato in alto a destra */
+      #helpModal{
+        align-items: flex-start;
+        justify-content: flex-end;
+        padding: 18px;              /* margine dai bordi */
+      }
+      
+      #helpModal .modal-content{
+        max-width: 420px;
+        margin-top: 10px;           /* stacca un filo dall'alto */
+      }
+     
     /* piccolo bottone rimuovi carrello */
     .btn-small {
       display: inline-block;
@@ -291,7 +302,15 @@
         align-items: center;
         gap: 8px;
       }
-      
+
+      /* Carrello più visibile in larghezza */
+        #cartBtn{
+          padding-left: 18px;
+          padding-right: 18px;
+          min-width: 210px;        /* aumenta la larghezza */
+          justify-content: center; /* centra contenuto */
+        }
+    
       .cart-icon{
         display: inline-flex;
         align-items: center;
@@ -682,7 +701,6 @@
         .replace(",", ".")
     ) || 0;
 
-
     const item = {
       categoria, codice, articolo, taglia, quantita, personalizzazione,
       prezzo_unitario: prezzoUnit
@@ -762,56 +780,112 @@
   `;
 }
 
-  // ===== CHECKOUT: INVIO UNICO =====
-  const ORDERS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyuPb1yCRfe1Yb2rYz_WQnogMncqD5lhbs0rYWqrvaPE3levoGqLanywPtuXTuh9uFO/exec";
-
-  async function checkout() {
-  const cart = getCart();
-  if (cart.length === 0) { alert("Carrello vuoto."); return; }
-
-  const nome = (document.getElementById("checkoutName").value || "").trim();
-  const email = (document.getElementById("checkoutEmail").value || "").trim();
-
-  if (!nome) { alert("Inserisci il nome ordinante."); return; }
-  if (!email || !email.includes("@")) { alert("Inserisci una email valida."); return; }
-
-  const payload = {
-    nome_ordinante: nome,
-    email: email,
-    tipo_ordine: "CLIENTE",
-    items: cart
-  };
-
-  try {
-    // Tentiamo una chiamata "normale" così (se possibile) riceviamo un JSON con ok/orderId
-    const res = await fetch(ORDERS_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
-
-    // Se Apps Script risponde JSON, proviamo a leggerlo
-    let json = null;
-    try { json = await res.json(); } catch (_) {}
-
-    if (json && json.ok) {
-      alert(`Ordine inviato! Numero ordine: ${json.orderId || ""}\nTi arriverà una mail di riepilogo.`);
-    } else {
-      // anche se non leggiamo json, l'ordine potrebbe essere arrivato lo stesso
-      alert("Ordine inviato! Ti arriverà una mail di riepilogo (se l'email è corretta).");
+     // ===== CHECKOUT: INVIO UNICO =====
+    const ORDERS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyuPb1yCRfe1Yb2rYz_WQnogMncqD5lhbs0rYWqrvaPE3levoGqLanywPtuXTuh9uFO/exec";
+    
+    async function checkout() {
+      const cart = getCart();
+      if (cart.length === 0) { alert("Carrello vuoto."); return; }
+    
+      const nome = (document.getElementById("checkoutName").value || "").trim();
+      const email = (document.getElementById("checkoutEmail").value || "").trim();
+    
+      if (!nome) { alert("Inserisci il nome ordinante."); return; }
+      if (!email || !email.includes("@")) { alert("Inserisci una email valida."); return; }
+    
+      const btn = document.getElementById("checkoutBtn");
+      const oldText = btn ? btn.textContent : "Invia ordine";
+    
+      // Anti doppio click
+      if (btn) {
+        btn.disabled = true;
+        btn.style.opacity = "0.65";
+        btn.style.cursor = "not-allowed";
+        btn.textContent = "Invio in corso...";
+      }
+    
+      const payload = {
+        nome_ordinante: nome,
+        email: email,
+        tipo_ordine: "CLIENTE",
+        items: cart
+      };
+    
+      // Timeout di sicurezza (12s)
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), 12000);
+    
+      try {
+        const res = await fetch(ORDERS_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+    
+        clearTimeout(t);
+    
+        // Proviamo a leggere JSON (se Apps Script lo restituisce con CORS ok)
+        let json = null;
+        try { json = await res.json(); } catch (_) {}
+    
+        if (json && json.ok) {
+          alert(`Ordine inviato! Numero ordine: ${json.orderId || ""}\nTi arriverà una mail di riepilogo.`);
+        } else {
+          // Anche senza JSON, spesso l'ordine è partito lo stesso
+          alert("Ordine inviato! Ti arriverà una mail di riepilogo (se l'email è corretta).");
+        }
+    
+        // Svuota carrello
+        setCart([]);
+        document.getElementById("checkoutName").value = "";
+        document.getElementById("checkoutEmail").value = "";
+        closeCart();
+    
+      } catch (err) {
+        clearTimeout(t);
+    
+        if (err && err.name === "AbortError") {
+          alert("Invio ordine: tempo scaduto. Riprova tra qualche secondo.");
+        } else {
+          alert("Errore di rete durante l'invio. Controlla connessione e riprova.");
+        }
+    
+        // riabilita bottone in caso di errore
+        if (btn) {
+          btn.disabled = false;
+          btn.style.opacity = "1";
+          btn.style.cursor = "pointer";
+          btn.textContent = oldText;
+        }
+        return;
+      }
+    
+      // Riabilita bottone dopo successo (se non hai chiuso subito il modal)
+      if (btn) {
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.style.cursor = "pointer";
+        btn.textContent = oldText;
+      }
     }
 
-    // svuota carrello
-    setCart([]);
-    document.getElementById("checkoutName").value = "";
-    document.getElementById("checkoutEmail").value = "";
-    closeCart();
+    function closeOnBackdropClick(modalId, closeFn) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+    
+      modal.addEventListener("click", (e) => {
+        // se clicchi sullo sfondo (non sul contenuto)
+        if (e.target === modal) closeFn();
+      });
+    }
+    
+    // attiva chiusura click-fuori per i 3 popup
+    closeOnBackdropClick("orderModal", closeModal);
+    closeOnBackdropClick("cartModal", closeCart);
+    closeOnBackdropClick("helpModal", closeHelp);
 
-  } catch (err) {
-    alert("Errore di rete durante l'invio. Controlla connessione e riprova.");
-  }
-}
-
+  
 </script>
 
 <!-- MODALE AGGIUNGI -->
@@ -847,7 +921,7 @@
     <input type="email" id="checkoutEmail" placeholder="nome@email.it">
 
     <div class="modal-actions">
-      <button class="confirm" onclick="checkout()">Invia ordine</button>
+      <button id="checkoutBtn" class="confirm" onclick="checkout()">Invia ordine</button>
       <button class="cancel" onclick="closeCart()">Chiudi</button>
     </div>
   </div>
