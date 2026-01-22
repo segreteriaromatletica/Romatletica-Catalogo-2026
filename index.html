@@ -914,19 +914,50 @@
       renderCart();
     }
   
-    function renderCart() {
-    const cart = getCart();
-    const box = document.getElementById("cartList");
-    if (!box) return;
-  
-    if (cart.length === 0) {
-      box.innerHTML = "<p>Carrello vuoto.</p>";
-      return;
-    }
-    function euro(n){
-    return (Number(n || 0)).toFixed(2).replace(".", ",");
-    }
+function renderCart() {
+  const cart = getCart();
+  const box = document.getElementById("cartList");
+  if (!box) return;
+
+  if (cart.length === 0) {
+    box.innerHTML = "<p>Carrello vuoto.</p>";
+    return;
   }
+
+  const fmt = (n) => (Number(n || 0)).toFixed(2).replace(".", ",");
+
+  const total = cart.reduce((sum, it) => {
+    const q = Number(it.quantita || 0);
+    const p = Number(it.prezzo_unitario || 0);
+    return sum + (p * q);
+  }, 0);
+
+  box.innerHTML = `
+    ${cart.map((it, idx) => {
+      const q = Number(it.quantita || 0);
+      const p = Number(it.prezzo_unitario || 0);
+      const r = p * q;
+
+      return `
+        <div style="border-bottom:1px solid #eee; padding:10px 0;">
+          <div><b>${it.articolo}</b></div>
+          <div style="color:#555;">
+            Codice: ${it.codice} — Taglia: ${it.taglia} — Q.tà: ${q}
+          </div>
+          <div style="margin-top:6px;">
+            Prezzo: <b>€ ${fmt(p)}</b> — Totale riga: <b>€ ${fmt(r)}</b>
+          </div>
+          <button class="btn-small" onclick="removeCartItem(${idx})">Rimuovi</button>
+        </div>
+      `;
+    }).join("")}
+
+    <div style="padding-top:12px; font-size:15px;">
+      <b>Totale ordine: € ${fmt(total)}</b>
+    </div>
+  `;
+}
+
     
   function getCartTotal(cart){
     return cart.reduce((sum, it) => {
