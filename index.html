@@ -301,6 +301,7 @@
   <button data-target="mezza_stagione">Mezza Stagione (<span id="count-mezza_stagione"></span>)</button>
   <button data-target="caldo">Tenersi al caldo (<span id="count-caldo"></span>)</button>
   <button data-target="piove">Anche se piove (<span id="count-piove"></span>)</button>
+  <button data-target="piccoli">Per i piccoli (<span id="count-piccoli"></span>)</button>
 </div>
 
 <div class="size-filter-bar">
@@ -925,7 +926,8 @@
     function euro(n){
     return (Number(n || 0)).toFixed(2).replace(".", ",");
     }
-  
+  }
+    
   function getCartTotal(cart){
     return cart.reduce((sum, it) => {
       const q = Number(it.quantita || 0);
@@ -1032,8 +1034,6 @@
     const ORDERS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyuPb1yCRfe1Yb2rYz_WQnogMncqD5lhbs0rYWqrvaPE3levoGqLanywPtuXTuh9uFO/exec";
     
     let checkoutLocked = false;
-    
-let checkoutLocked = false;
 
 async function checkout() {
   if (checkoutLocked) return;
