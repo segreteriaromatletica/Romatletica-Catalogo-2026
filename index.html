@@ -585,8 +585,10 @@
       const opt = document.createElement('option');
       opt.value = s;
       opt.textContent = s;
-      sizeSelect.appendChild(opt);
+      sizeSelect.appendChild(opt);    
     });
+    document.getElementById("orderQty").value = 1;
+    sizeSelect.selectedIndex = 0;
 
     document.getElementById('orderModal').style.display = 'flex';
   }
@@ -678,57 +680,99 @@
   }
 
   function renderCart() {
-    const cart = getCart();
-    const box = document.getElementById("cartList");
-    if (!box) return;
+  const cart = getCart();
+  const box = document.getElementById("cartList");
+  if (!box) return;
 
-    if (cart.length === 0) {
-      box.innerHTML = "<p>Carrello vuoto.</p>";
-      return;
-    }
-
-    box.innerHTML = cart.map((it, idx) => `
-      <div style="border-bottom:1px solid #eee; padding:10px 0;">
-        <div><b>${it.articolo}</b></div>
-        <div style="color:#555;">Codice: ${it.codice} — Taglia: ${it.taglia} — Q.tà: ${it.quantita}</div>
-        <button class="btn-small" onclick="removeCartItem(${idx})">Rimuovi</button>
-      </div>
-    `).join("");
+  if (cart.length === 0) {
+    box.innerHTML = "<p>Carrello vuoto.</p>";
+    return;
   }
+
+  const fmt = (n) => (Number(n || 0)).toFixed(2).replace(".", ",");
+
+  const total = cart.reduce((sum, it) => {
+    const q = Number(it.quantita || 0);
+    const p = Number(it.prezzo_unitario || 0);
+    return sum + (p * q);
+  }, 0);
+
+  box.innerHTML = `
+    ${cart.map((it, idx) => {
+      const q = Number(it.quantita || 0);
+      const p = Number(it.prezzo_unitario || 0);
+      const r = p * q;
+
+      return `
+        <div style="border-bottom:1px solid #eee; padding:10px 0;">
+          <div><b>${it.articolo}</b></div>
+          <div style="color:#555;">
+            Codice: ${it.codice} — Taglia: ${it.taglia} — Q.tà: ${q}
+          </div>
+          <div style="margin-top:6px;">
+            Prezzo: <b>€ ${fmt(p)}</b> — Totale riga: <b>€ ${fmt(r)}</b>
+          </div>
+          <button class="btn-small" onclick="removeCartItem(${idx})">Rimuovi</button>
+        </div>
+      `;
+    }).join("")}
+
+    <div style="padding-top:12px; font-size:15px;">
+      <b>Totale ordine: € ${fmt(total)}</b>
+    </div>
+  `;
+}
 
   // ===== CHECKOUT: INVIO UNICO =====
   const ORDERS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyuPb1yCRfe1Yb2rYz_WQnogMncqD5lhbs0rYWqrvaPE3levoGqLanywPtuXTuh9uFO/exec";
 
-  function checkout() {
-    const cart = getCart();
-    if (cart.length === 0) { alert("Carrello vuoto."); return; }
+  async function checkout() {
+  const cart = getCart();
+  if (cart.length === 0) { alert("Carrello vuoto."); return; }
 
-    const nome = (document.getElementById("checkoutName").value || "").trim();
-    const email = (document.getElementById("checkoutEmail").value || "").trim();
+  const nome = (document.getElementById("checkoutName").value || "").trim();
+  const email = (document.getElementById("checkoutEmail").value || "").trim();
 
-    if (!nome) { alert("Inserisci il nome ordinante."); return; }
-    if (!email || !email.includes("@")) { alert("Inserisci una email valida."); return; }
+  if (!nome) { alert("Inserisci il nome ordinante."); return; }
+  if (!email || !email.includes("@")) { alert("Inserisci una email valida."); return; }
 
-    const payload = {
-      nome_ordinante: nome,
-      email: email,
-      tipo_ordine: "CLIENTE",
-      items: cart
-    };
+  const payload = {
+    nome_ordinante: nome,
+    email: email,
+    tipo_ordine: "CLIENTE",
+    items: cart
+  };
 
-    fetch(ORDERS_ENDPOINT, {
+  try {
+    // Tentiamo una chiamata "normale" così (se possibile) riceviamo un JSON con ok/orderId
+    const res = await fetch(ORDERS_ENDPOINT, {
       method: "POST",
-      mode: "no-cors",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload)
     });
 
-    alert("Ordine inviato! Ti arriverà una mail di riepilogo.");
+    // Se Apps Script risponde JSON, proviamo a leggerlo
+    let json = null;
+    try { json = await res.json(); } catch (_) {}
+
+    if (json && json.ok) {
+      alert(`Ordine inviato! Numero ordine: ${json.orderId || ""}\nTi arriverà una mail di riepilogo.`);
+    } else {
+      // anche se non leggiamo json, l'ordine potrebbe essere arrivato lo stesso
+      alert("Ordine inviato! Ti arriverà una mail di riepilogo (se l'email è corretta).");
+    }
+
+    // svuota carrello
     setCart([]);
     document.getElementById("checkoutName").value = "";
     document.getElementById("checkoutEmail").value = "";
     closeCart();
+
+  } catch (err) {
+    alert("Errore di rete durante l'invio. Controlla connessione e riprova.");
   }
+}
+
 </script>
 
 <!-- MODALE AGGIUNGI -->
