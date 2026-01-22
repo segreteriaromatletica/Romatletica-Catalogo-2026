@@ -783,92 +783,85 @@
      // ===== CHECKOUT: INVIO UNICO =====
     const ORDERS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyuPb1yCRfe1Yb2rYz_WQnogMncqD5lhbs0rYWqrvaPE3levoGqLanywPtuXTuh9uFO/exec";
     
-    async function checkout() {
-      const cart = getCart();
-      if (cart.length === 0) { alert("Carrello vuoto."); return; }
-    
-      const nome = (document.getElementById("checkoutName").value || "").trim();
-      const email = (document.getElementById("checkoutEmail").value || "").trim();
-    
-      if (!nome) { alert("Inserisci il nome ordinante."); return; }
-      if (!email || !email.includes("@")) { alert("Inserisci una email valida."); return; }
-    
-      const btn = document.getElementById("checkoutBtn");
-      const oldText = btn ? btn.textContent : "Invia ordine";
-    
-      // Anti doppio click
-      if (btn) {
-        btn.disabled = true;
-        btn.style.opacity = "0.65";
-        btn.style.cursor = "not-allowed";
-        btn.textContent = "Invio in corso...";
-      }
-    
-      const payload = {
-        nome_ordinante: nome,
-        email: email,
-        tipo_ordine: "CLIENTE",
-        items: cart
-      };
-    
-      // Timeout di sicurezza (12s)
-      const controller = new AbortController();
-      const t = setTimeout(() => controller.abort(), 12000);
-    
-      try {
-        const res = await fetch(ORDERS_ENDPOINT, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload),
-          signal: controller.signal
-        });
-    
-        clearTimeout(t);
-    
-        // Proviamo a leggere JSON (se Apps Script lo restituisce con CORS ok)
-        let json = null;
-        try { json = await res.json(); } catch (_) {}
-    
-        if (json && json.ok) {
-          alert(`Ordine inviato! Numero ordine: ${json.orderId || ""}\nTi arriverà una mail di riepilogo.`);
-        } else {
-          // Anche senza JSON, spesso l'ordine è partito lo stesso
-          alert("Ordine inviato! Ti arriverà una mail di riepilogo (se l'email è corretta).");
-        }
-    
-        // Svuota carrello
-        setCart([]);
-        document.getElementById("checkoutName").value = "";
-        document.getElementById("checkoutEmail").value = "";
-        closeCart();
-    
-      } catch (err) {
-        clearTimeout(t);
-    
-        if (err && err.name === "AbortError") {
-          alert("Invio ordine: tempo scaduto. Riprova tra qualche secondo.");
-        } else {
-          alert("Errore di rete durante l'invio. Controlla connessione e riprova.");
-        }
-    
-        // riabilita bottone in caso di errore
-        if (btn) {
-          btn.disabled = false;
-          btn.style.opacity = "1";
-          btn.style.cursor = "pointer";
-          btn.textContent = oldText;
-        }
-        return;
-      }
-    
-      // Riabilita bottone dopo successo (se non hai chiuso subito il modal)
-      if (btn) {
-        btn.disabled = false;
-        btn.style.opacity = "1";
-        btn.style.cursor = "pointer";
-        btn.textContent = oldText;
-      }
+  let checkoutLocked = false;
+
+async function checkout() {
+  if (checkoutLocked) return; // blocco anti doppio click
+  checkoutLocked = true;
+
+  const btn = document.getElementById("checkoutBtn");
+  const oldText = btn ? btn.textContent : "";
+
+  if (btn) {
+    btn.disabled = true;
+    btn.style.opacity = "0.7";
+    btn.style.cursor = "not-allowed";
+    btn.textContent = "Invio in corso...";
+  }
+
+  // paracadute: anche se qualcosa va storto, dopo 12s sblocca
+  const safetyTimer = setTimeout(() => {
+    checkoutLocked = false;
+    if (btn) {
+      btn.disabled = false;
+      btn.style.opacity = "1";
+      btn.style.cursor = "pointer";
+      btn.textContent = oldText || "Invia ordine";
     }
+  }, 12000);
+
+  try {
+    const cart = getCart();
+    if (cart.length === 0) { alert("Carrello vuoto."); throw new Error("cart vuoto"); }
+
+    const nome = (document.getElementById("checkoutName").value || "").trim();
+    const email = (document.getElementById("checkoutEmail").value || "").trim();
+
+    if (!nome) { alert("Inserisci il nome ordinante."); throw new Error("nome mancante"); }
+    if (!email || !email.includes("@")) { alert("Inserisci una email valida."); throw new Error("email non valida"); }
+
+    const payload = {
+      nome_ordinante: nome,
+      email: email,
+      tipo_ordine: "CLIENTE",
+      items: cart
+    };
+
+    // Nota: su Apps Script spesso non puoi leggere la risposta (CORS),
+    // ma l'invio va comunque. Quindi qui facciamo invio "semplice".
+    await fetch(ORDERS_ENDPOINT, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+
+    alert("Ordine inviato! Ti arriverà una mail di riepilogo (se l'email è corretta).");
+
+    setCart([]);
+    document.getElementById("checkoutName").value = "";
+    document.getElementById("checkoutEmail").value = "";
+    closeCart();
+
+  } catch (err) {
+    // se errore: sblocca subito
+    checkoutLocked = false;
+    if (btn) {
+      btn.disabled = false;
+      btn.style.opacity = "1";
+      btn.style.cursor = "pointer";
+      btn.textContent = oldText || "Invia ordine";
+    }
+    clearTimeout(safetyTimer);
+    // se vuoi, puoi mostrare un messaggio più specifico:
+    // alert("Errore durante l'invio. Riprova.");
+    return;
+  }
+
+  // se tutto ok: lasciamo il bottone disabilitato finché chiudi (o safetyTimer)
+  clearTimeout(safetyTimer);
+}
+
 
     function closeOnBackdropClick(modalId, closeFn) {
       const modal = document.getElementById(modalId);
