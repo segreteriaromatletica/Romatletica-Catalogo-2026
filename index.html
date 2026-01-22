@@ -299,7 +299,7 @@
   <button data-target="Low_cost">Low cost (<span id="count-Low_cost"></span>)</button>
   <button data-target="pantaloni">Pantaloni (<span id="count-pantaloni"></span>)</button>
   <button data-target="mezza_stagione">Mezza Stagione (<span id="count-mezza_stagione"></span>)</button>
- 
+  <button data-target="caldo">Tenersi al caldo (<span id="count-caldo"></span>)</button>
 </div>
 
 <div class="size-filter-bar">
@@ -683,7 +683,7 @@
   <h2>Mezza Stagione</h2>
   <div class="catalog-grid">
     
-    <div class="card" data-size="6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL" data-personal="no" data-price="35">
+    <div class="card" data-size="6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL" data-personal="yes" data-price="35">
       <img src="103795.331-smanicato.png" class="product-img">
       <h3>Gilet imbottito Urban V blu navy</h3>
       <p>Codice articolo: 103795.331</p>
@@ -692,7 +692,30 @@
       <a class="btn" href="#" onclick="openOrder(this); return false;">AGGIUNGI</a>
     </div>
   </div>
+
+  <section id="caldo">
+  <h2>Tenersi al caldo</h2>
+  <div class="catalog-grid">
     
+    <div class="card" data-size="6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL" data-personal="no" data-price="19">
+      <img src="101018.030-manica-lunga-rosa.png" class="product-img">
+      <h3>Manica lunga unisex Brama Academy rosa fluo</h3>
+      <p>Codice articolo: 101018.030</p>
+      <p>Taglie:4(6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL</p>
+      <p class="price">€19 – prezzo affiliati</p>
+      <a class="btn" href="#" onclick="openOrder(this); return false;">AGGIUNGI</a>
+    </div>
+
+    <div class="card" data-size="6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL" data-personal="no" data-price="24">
+      <img src="101650.671-lunga-bramaC.png" class="product-img">
+      <h3>Manica lunga unisex Brama Classic bordeux</h3>
+      <p>Codice articolo: 101650.671</p>
+      <p>Taglie:4(6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL</p>
+      <p class="price">€24 – prezzo affiliati</p>
+      <a class="btn" href="#" onclick="openOrder(this); return false;">AGGIUNGI</a>
+    </div>
+  </div> 
+  
 <script>
   const typeButtons = document.querySelectorAll('.filter-bar button');
   const sizeButtons = document.querySelectorAll('.size-filter-bar button');
