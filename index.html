@@ -885,65 +885,73 @@
     
     let checkoutLocked = false;
     
-       async function checkout() {
-      if (checkoutLocked) return;
-      checkoutLocked = true;
-    
-      const btn = document.getElementById("checkoutBtn");
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = "Invio in corso...";
-        btn.style.opacity = "0.7";
-        btn.style.cursor = "not-allowed";
-      }
-    
-      const cart = getCart();
-      if (cart.length === 0) {
-        alert("Carrello vuoto.");
-        resetCheckout(btn);
-        return;
-      }
-    
-      const nome = (document.getElementById("checkoutName").value || "").trim();
-      const email = (document.getElementById("checkoutEmail").value || "").trim();
-    
-      if (!nome || !email || !email.includes("@")) {
-        alert("Inserisci nome ed email validi.");
-        resetCheckout(btn);
-        return;
-      }
-    
-      const payload = {
-        nome_ordinante: nome,
-        email: email,
-        tipo_ordine: "CLIENTE",
-        items: cart
-      };
-    
-      try {
-        await fetch(ORDERS_ENDPOINT, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
-    
-        alert("Ordine inviato! Ti arriverà una mail di riepilogo (se l'email è corretta).");
-    
-        setCart([]);
-        renderCart();
-        document.getElementById("checkoutName").value = "";
-        document.getElementById("checkoutEmail").value = "";
-        closeCart();
-    
-        // tieni il lock ancora un attimo per sicurezza
-        setTimeout(() => resetCheckout(btn), 2000);
-    
-      } catch (err) {
-        alert("Errore durante l'invio. Controlla la connessione e riprova.");
-        resetCheckout(btn);
-      }
-    }
+async function checkout() {
+  if (checkoutLocked) return;
+  checkoutLocked = true;
+
+  const btn = document.getElementById("checkoutBtn");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Invio in corso...";
+    btn.style.opacity = "0.7";
+    btn.style.cursor = "not-allowed";
+  }
+
+  const cart = getCart();
+  if (cart.length === 0) {
+    alert("Carrello vuoto.");
+    resetCheckout(btn);
+    return;
+  }
+
+  const nome = (document.getElementById("checkoutName")?.value || "").trim();
+  const email = (document.getElementById("checkoutEmail")?.value || "").trim();
+
+  if (!nome || !email || !email.includes("@")) {
+    alert("Inserisci nome ed email validi.");
+    resetCheckout(btn);
+    return;
+  }
+
+  const payload = {
+    nome_ordinante: nome,
+    email: email,
+    tipo_ordine: "CLIENTE",
+    items: cart
+  };
+
+  // ✅ 1) PROVIAMO A INVIARE (solo questo dentro try/catch)
+  try {
+    await fetch(ORDERS_ENDPOINT, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+  } catch (err) {
+    console.error("FETCH FALLITA:", err);
+    alert("Problema di rete durante l'invio. Riprova.");
+    resetCheckout(btn);
+    return;
+  }
+
+  // ✅ 2) DA QUI IN POI: NIENTE catch “finto rete”
+  alert("Ordine inviato! Ti arriverà una mail di riepilogo (se l'email è corretta).");
+
+  setCart([]);
+  if (typeof renderCart === "function") renderCart();
+
+  const nameEl = document.getElementById("checkoutName");
+  const mailEl = document.getElementById("checkoutEmail");
+  if (nameEl) nameEl.value = "";
+  if (mailEl) mailEl.value = "";
+
+  if (typeof closeCart === "function") closeCart();
+
+  // piccolo delay anti doppio-click residuo
+  setTimeout(() => resetCheckout(btn), 1500);
+}
+
 
     
     function resetCheckout(btn) {
