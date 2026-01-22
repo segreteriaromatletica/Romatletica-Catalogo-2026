@@ -1098,19 +1098,6 @@ async function checkout() {
       btn.textContent = "Inviato ✅";
     }
 
-    // opzionale: chiudi automaticamente dopo 3.5 secondi
-    setTimeout(() => {
-      closeCart();
-      hideCheckoutFeedback();
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent = oldText || "Invia ordine";
-        btn.style.opacity = "1";
-        btn.style.cursor = "pointer";
-      }
-      checkoutLocked = false;
-    }, 3500);
-
   } catch (err) {
     // se validazioni falliscono o fetch fallisce davvero
     checkoutLocked = false;
