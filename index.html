@@ -745,7 +745,20 @@
 
   </div>
  </section>
-  
+
+  <section id="piccoli">
+  <h2>Per i più giovani</h2>
+  <div class="catalog-grid">
+    
+    <div class="card" data-size="7XS,6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL" data-personal="yes" data-price="20">
+      <img src="104796.700-kway-royal" class="product-img">
+      <h3>Antipioggia uomo Rain blu royal</h3>
+      <p>Codice articolo: 104796.700</p>
+      <p>Taglie:3(7XS) ·4(6XS) · 6(5XS) · 8(4XS) · 10(3XS) · 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
+      <p class="price">€20 – prezzo affiliati</p>
+      <a class="btn" href="#" onclick="openOrder(this); return false;">AGGIUNGI</a>
+    </div>
+
   
   
   <script>
@@ -1026,40 +1039,6 @@ function renderCart() {
     box.style.display = "none";
     box.innerHTML = "";
   }
-
-  const fmt = (n) => (Number(n || 0)).toFixed(2).replace(".", ",");
-
-  const total = cart.reduce((sum, it) => {
-    const q = Number(it.quantita || 0);
-    const p = Number(it.prezzo_unitario || 0);
-    return sum + (p * q);
-  }, 0);
-
-  box.innerHTML = `
-    ${cart.map((it, idx) => {
-      const q = Number(it.quantita || 0);
-      const p = Number(it.prezzo_unitario || 0);
-      const r = p * q;
-
-      return `
-        <div style="border-bottom:1px solid #eee; padding:10px 0;">
-          <div><b>${it.articolo}</b></div>
-          <div style="color:#555;">
-            Codice: ${it.codice} — Taglia: ${it.taglia} — Q.tà: ${q}
-          </div>
-          <div style="margin-top:6px;">
-            Prezzo: <b>€ ${fmt(p)}</b> — Totale riga: <b>€ ${fmt(r)}</b>
-          </div>
-          <button class="btn-small" onclick="removeCartItem(${idx})">Rimuovi</button>
-        </div>
-      `;
-    }).join("")}
-
-    <div style="padding-top:12px; font-size:15px;">
-      <b>Totale ordine: € ${fmt(total)}</b>
-    </div>
-  `;
-}
 
      // ===== CHECKOUT: INVIO UNICO =====
     const ORDERS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyuPb1yCRfe1Yb2rYz_WQnogMncqD5lhbs0rYWqrvaPE3levoGqLanywPtuXTuh9uFO/exec";
