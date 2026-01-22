@@ -70,6 +70,17 @@
       cursor: pointer;
       font-size: 14px;
     }
+    
+    /* Bottone OUTLET */
+    .filter-bar button.outlet-btn {
+      background-color: #b30000; /* rosso outlet */
+      color: #fff;
+      font-weight: bold;
+    }
+    .filter-bar button.outlet-btn.active {
+      background-color: #ffcccc;
+      color: #b30000;
+    }
     .filter-bar button.active {
       background-color: #f7ff00;
       color: #004aad;
@@ -302,6 +313,10 @@
   <button data-target="caldo">Tenersi al caldo (<span id="count-caldo"></span>)</button>
   <button data-target="piove">Anche se piove (<span id="count-piove"></span>)</button>
   <button data-target="piccoli">Per i piccoli (<span id="count-piccoli"></span>)</button>
+  
+  <button data-target="outlet" class="outlet-btn">
+  OUTLET (<span id="count-outlet"></span>)
+  </button>
 </div>
 
 <div class="size-filter-bar">
@@ -780,7 +795,26 @@
 
   </div>
   </section>
-  
+
+  <section id="outlet">
+  <h2 style="color:#b30000;">OUTLET</h2>
+
+  <div class="catalog-grid">
+    <div class="card" data-size="S" data-personal="yes" data-price="30">
+      <img src="901429.321-giacca-lei-trivor.png" class="product-img">
+      <h3>Giaccone donna Trivor blu navy giallo fluo</h3>
+      <p>Codice articolo: 901429.321</p>
+      <p>disponibili 8 articoli taglia S
+      <p class="price">€30 – prezzo outlet</p>
+      <a class="btn" href="#" onclick="openOrder(this); return false;">AGGIUNGI</a>
+    </div>
+
+
+
+    
+  </div>
+</section>
+
   
   <script>
   const typeButtons = document.querySelectorAll('.filter-bar button');
