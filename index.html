@@ -632,7 +632,15 @@
 
     const personalizzazione = selectedCard.dataset.personal || "no";
 
-    const prezzoUnit = Number(selectedCard.dataset.price || 0);
+    // PREZZO UNITARIO: prende data-price e lo converte anche se ha virgole / simbolo €
+    const priceRaw = (selectedCard.dataset.price || "").toString().trim();
+    const prezzoUnit = parseFloat(
+      priceRaw
+        .replace("€", "")
+        .replace(/\s+/g, "")
+        .replace(",", ".")
+    ) || 0;
+
 
     const item = {
       categoria, codice, articolo, taglia, quantita, personalizzazione,
