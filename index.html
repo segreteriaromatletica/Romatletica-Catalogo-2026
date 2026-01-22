@@ -876,7 +876,7 @@
     
     let checkoutLocked = false;
     
-    async function checkout() {
+       async function checkout() {
       if (checkoutLocked) return;
       checkoutLocked = true;
     
@@ -885,6 +885,7 @@
         btn.disabled = true;
         btn.textContent = "Invio in corso...";
         btn.style.opacity = "0.7";
+        btn.style.cursor = "not-allowed";
       }
     
       const cart = getCart();
@@ -911,27 +912,30 @@
       };
     
       try {
-        const res = await fetch(ORDERS_ENDPOINT, {
+        await fetch(ORDERS_ENDPOINT, {
           method: "POST",
+          mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload)
         });
     
-        const json = await res.json();
+        alert("Ordine inviato! Ti arriverà una mail di riepilogo (se l'email è corretta).");
     
-        if (json && json.ok) {
-          showOrderSuccess(json.orderId || "");
-          setCart([]);
-        } else {
-          alert("Ordine inviato, ma senza conferma visiva.");
-          resetCheckout(btn);
-        }
+        setCart([]);
+        renderCart();
+        document.getElementById("checkoutName").value = "";
+        document.getElementById("checkoutEmail").value = "";
+        closeCart();
+    
+        // tieni il lock ancora un attimo per sicurezza
+        setTimeout(() => resetCheckout(btn), 2000);
     
       } catch (err) {
-        alert("Errore di rete. Riprova.");
+        alert("Errore durante l'invio. Controlla la connessione e riprova.");
         resetCheckout(btn);
       }
     }
+
     
     function resetCheckout(btn) {
       checkoutLocked = false;
