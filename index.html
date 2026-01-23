@@ -948,146 +948,500 @@
 
 
   
-<script>
-let cart = [];
-let currentProduct = null;
+  <script>
+  const typeButtons = document.querySelectorAll('.filter-bar button');
+  const sizeButtons = document.querySelectorAll('.size-filter-bar button');
+  const sections = document.querySelectorAll('section');
 
-// ---- APERTURA MODALE ORDINE ----
-function openOrder(btn) {
-  const card = btn.closest('.card');
-  currentProduct = {
-    name: card.querySelector('h3').innerText,
-    code: card.querySelector('p[hidden]').innerText,
-    price: parseFloat(card.dataset.price),
-    sizes: card.dataset.size.split(',')
-  };
+  let activeSection = "tuta";
+  let activeSize = "all";
 
-  // Popola modale
-  const orderModal = document.getElementById('orderModal');
-  document.getElementById('modalProduct').innerText = currentProduct.name;
-  const sizeSelect = document.getElementById('orderSize');
-  sizeSelect.innerHTML = '';
-  currentProduct.sizes.forEach(size => {
-    const option = document.createElement('option');
-    option.value = size.trim();
-    option.innerText = size.trim();
-    sizeSelect.appendChild(option);
+  typeButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      typeButtons.forEach(b => b.classList.remove('active'));
+      button.classList.add('active');
+      activeSection = button.dataset.target;
+
+      sections.forEach(section => {
+        section.classList.toggle('active', section.id === activeSection);
+      });
+
+      filterBySize();
+    });
   });
-  document.getElementById('orderQty').value = 1;
 
-  orderModal.style.display = 'flex';
-}
+  sizeButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      sizeButtons.forEach(b => b.classList.remove('active'));
+      button.classList.add('active');
+      activeSize = button.dataset.size;
+      filterBySize();
+    });
+  });
 
-// ---- CHIUSURA MODALE ----
-function closeModal() {
-  document.getElementById('orderModal').style.display = 'none';
-}
+  function filterBySize() {
+    const activeSec = document.getElementById(activeSection);
+    const cards = activeSec.querySelectorAll('.card');
 
-// ---- AGGIUNGI AL CARRELLO ----
-function addCurrentToCart() {
-  if (!currentProduct) return;
-
-  const size = document.getElementById('orderSize').value;
-  const qty = parseInt(document.getElementById('orderQty').value);
-  if (!size || qty < 1) return alert('Seleziona taglia e quantità valide');
-
-  // Se lo stesso prodotto e taglia esiste, somma quantità
-  const existingIndex = cart.findIndex(item => item.code === currentProduct.code && item.size === size);
-  if (existingIndex >= 0) {
-    cart[existingIndex].qty += qty;
-  } else {
-    cart.push({
-      ...currentProduct,
-      size,
-      qty
+    cards.forEach(card => {
+      const sizes = card.getAttribute('data-size');
+      if (activeSize === "all" || sizes === "all" || sizes.includes(activeSize)) {
+      card.classList.remove('disabled');
+      } else {
+      card.classList.add('disabled');
+      }
     });
   }
 
-  updateCartCount();
-  showToast(`${currentProduct.name} aggiunto al carrello (${qty}x)`);
-
-  closeModal();
-}
-
-// ---- AGGIORNAMENTO CONTATORE ----
-function updateCartCount() {
-  let count = cart.reduce((sum, item) => sum + item.qty, 0);
-  const badge = document.getElementById('cartCount');
-  if (badge) {
-    badge.innerText = count;
-    badge.style.display = count > 0 ? 'inline-block' : 'none';
+  // CONTATORI
+  function updateCounts() {
+    sections.forEach(section => {
+      const cards = section.querySelectorAll('.card').length;
+      const span = document.getElementById('count-' + section.id);
+      if (span) span.textContent = cards;
+    });
   }
-}
+  updateCounts();
 
-// ---- APERTURA MODALE CARRELLO ----
-function openCart() {
-  const cartModal = document.getElementById('cartModal');
-  const cartList = document.getElementById('cartList');
-  cartList.innerHTML = '';
+  // ===== MODALE "AGGIUNGI" =====
+  let selectedCard = null;
+
+  function openOrder(btn) {
+    selectedCard = btn.closest('.card');
+    const title = selectedCard.querySelector('h3').innerText;
+    const sizes = (selectedCard.dataset.size || "all").split(',');
+
+    document.getElementById('modalProduct').innerText = title;
+
+    const sizeSelect = document.getElementById('orderSize');
+    sizeSelect.innerHTML = '';
+    sizes.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s;
+      opt.textContent = s;
+      sizeSelect.appendChild(opt);    
+    });
+    document.getElementById("orderQty").value = 1;
+    sizeSelect.selectedIndex = 0;
+
+    document.getElementById('orderModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('orderModal').style.display = 'none';
+  }
+
+  // ===== CARRELLO (LOCALSTORAGE) =====
+  function getCart() {
+    try { return JSON.parse(localStorage.getItem("romatletica_cart") || "[]"); }
+    catch { return []; }
+  }
+
+  function setCart(cart) {
+    localStorage.setItem("romatletica_cart", JSON.stringify(cart));
+    updateCartCount();
+  }
+
+  function updateCartCount() {
+    const cart = getCart();
+    const count = cart.reduce((sum, it) => sum + (Number(it.quantita) || 0), 0);
+    const el = document.getElementById("cartCount");
+    if (el) el.textContent = String(count);
+  }
+  updateCartCount();
+
+  function addCurrentToCart() {
+    if (!selectedCard) return;
+
+    const taglia = document.getElementById("orderSize").value || "";
+    const quantita = Number(document.getElementById("orderQty").value || 0);
+
+    if (!taglia) { alert("Seleziona una taglia."); return; }
+    if (!quantita || quantita < 1) { alert("Inserisci una quantità valida (>=1)."); return; }
+
+    const articolo = selectedCard.querySelector("h3")?.innerText || "";
+    
+    // prende SEMPRE la riga che contiene "Codice" (non il primo <p> a caso)
+    const codiceRaw = Array.from(selectedCard.querySelectorAll("p"))
+      .map(p => p.innerText || "")
+      .find(t => t.includes("Codice")) || "";
+    
+    // codice "visibile" come prima (con il punto)
+    const codice = codiceRaw
+      .replace("Codice articolo:", "")
+      .replace("Codice:", "")
+      .trim();
+    
+    // ✅ nuovo: codice "nascosto" solo cifre (senza punti e senza perdere zeri)
+    const codice_intero = codice.replace(/\D/g, "");
+
+    const catRaw = document.querySelector(".filter-bar button.active")?.innerText || "";
+    const categoria = catRaw.replace(/\s*\(.*\)\s*$/, "").trim();
+
+    const personalizzazione = selectedCard.dataset.personal || "no";
+
+    // PREZZO UNITARIO: prende data-price e lo converte anche se ha virgole / simbolo €
+    const priceRaw = (selectedCard.dataset.price || "").toString().trim();
+    const prezzoUnit = parseFloat(
+      priceRaw
+        .replace("€", "")
+        .replace(/\s+/g, "")
+        .replace(",", ".")
+    ) || 0;
+
+    const item = {
+      categoria,
+      codice,              // codice con punto (visibile)
+      codice_intero,       // ✅ nuovo: codice solo cifre (nascosto)
+      articolo,
+      taglia,
+      quantita,
+      personalizzazione,
+      prezzo_unitario: prezzoUnit
+    };
+
+
+    const cart = getCart();
+    const existing = cart.find(x => x.codice_intero === item.codice_intero && x.taglia === item.taglia);
+    
+    if (existing) {
+      existing.quantita = Number(existing.quantita) + Number(item.quantita);
+    } else {
+      cart.push(item);
+    }
+    
+    setCart(cart);
+
+
+    document.getElementById("orderQty").value = 1;
+    closeModal();
+  }
+
+  // ===== MODALE CARRELLO =====
+    function openCart() {
+    hideCheckoutFeedback();
+    renderCart();
+    document.getElementById("cartModal").style.display = "flex";
+    }
+
+  
+    function closeCart() {
+      document.getElementById("cartModal").style.display = "none";
+    }
+  
+    function removeCartItem(index) {
+      const cart = getCart();
+      cart.splice(index, 1);
+      setCart(cart);
+      renderCart();
+    }
+  
+function renderCart() {
+  const cart = getCart();
+  const box = document.getElementById("cartList");
+  if (!box) return;
 
   if (cart.length === 0) {
-    cartList.innerHTML = '<p>Il carrello è vuoto</p>';
-  } else {
-    cart.forEach((item, index) => {
-      const div = document.createElement('div');
-      div.style.marginBottom = '8px';
-      div.innerHTML = `<b>${item.name}</b> - Taglia: ${item.size} - Quantità: ${item.qty} - €${(item.price*item.qty).toFixed(2)} 
-      <button class="btn-small" onclick="removeFromCart(${index})">Rimuovi</button>`;
-      cartList.appendChild(div);
-    });
+    box.innerHTML = "<p>Carrello vuoto.</p>";
+    return;
   }
 
-  cartModal.style.display = 'flex';
+  const fmt = (n) => (Number(n || 0)).toFixed(2).replace(".", ",");
+
+  const total = cart.reduce((sum, it) => {
+    const q = Number(it.quantita || 0);
+    const p = Number(it.prezzo_unitario || 0);
+    return sum + (p * q);
+  }, 0);
+
+  box.innerHTML = `
+    ${cart.map((it, idx) => {
+      const q = Number(it.quantita || 0);
+      const p = Number(it.prezzo_unitario || 0);
+      const r = p * q;
+
+      return `
+        <div style="border-bottom:1px solid #eee; padding:10px 0;">
+          <div><b>${it.articolo}</b></div>
+          <div style="color:#555;">
+            Codice: ${it.codice} — Taglia: ${it.taglia} — Q.tà: ${q}
+          </div>
+          <div style="margin-top:6px;">
+            Prezzo: <b>€ ${fmt(p)}</b> — Totale riga: <b>€ ${fmt(r)}</b>
+          </div>
+          <button class="btn-small" onclick="removeCartItem(${idx})">Rimuovi</button>
+        </div>
+      `;
+    }).join("")}
+
+    <div style="padding-top:12px; font-size:15px;">
+      <b>Totale ordine: € ${fmt(total)}</b>
+    </div>
+  `;
 }
 
-// ---- CHIUSURA MODALE CARRELLO ----
-function closeCart() {
-  document.getElementById('cartModal').style.display = 'none';
-}
+    function showToast(message) {
+  const toast = document.getElementById('toastAlert');
+  toast.textContent = message;
+  toast.classList.add('show');
 
-// ---- RIMUOVI DAL CARRELLO ----
-function removeFromCart(index) {
-  cart.splice(index,1);
-  updateCartCount();
-  openCart(); // riapre per aggiornare lista
-}
-
-// ---- TOAST ----
-function showToast(message) {
-  let toast = document.createElement('div');
-  toast.className = 'toast-alert';
-  toast.innerText = message;
-  document.body.appendChild(toast);
-
-  setTimeout(() => toast.classList.add('show'), 10);
-
+  // Dopo 2 secondi sfuma via
   setTimeout(() => {
     toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 500);
-  }, 2500);
+  }, 2000);
 }
 
-// ---- MODALE HELP ----
-function openHelp() { document.getElementById('helpModal').style.display = 'flex'; }
-function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
+// Apri il modal per ordine
+function openOrder(btn) {
+  const card = btn.closest('.card');
+  const productName = card.querySelector('h3').textContent;
+  const modalProduct = document.getElementById('modalProduct');
+  modalProduct.textContent = productName;
 
-// ---- CHECKOUT ----
-function checkout() {
-  const name = document.getElementById('checkoutName').value.trim();
-  const email = document.getElementById('checkoutEmail').value.trim();
-  if (!name || !email) return alert('Inserisci nome ed email');
+  const orderSize = document.getElementById('orderSize');
+  orderSize.innerHTML = ''; // reset
 
-  document.getElementById('checkoutFeedback').style.display = 'block';
-  document.getElementById('checkoutFeedback').innerText = `Grazie ${name}! Ordine inviato a ${email}.`;
+  const sizes = card.dataset.size.split(',');
+  sizes.forEach(size => {
+    const opt = document.createElement('option');
+    opt.value = size;
+    opt.textContent = size;
+    orderSize.appendChild(opt);
+  });
 
-  cart = [];
-  updateCartCount();
-  document.getElementById('cartList').innerHTML = '';
+  document.getElementById('orderQty').value = 1;
+  document.getElementById('orderModal').style.display = 'flex';
 }
 
-// ---- inizializzazione contatore al caricamento ----
-document.addEventListener('DOMContentLoaded', updateCartCount);
+// Aggiungi al carrello e mostra toast
+function addCurrentToCart() {
+  const modal = document.getElementById('orderModal');
+  const productName = document.getElementById('modalProduct').textContent;
+  
+  // Qui la tua logica attuale per aggiungere al carrello
+  addToCart(productName); // se hai una funzione esistente
+
+  // Mostra il toast
+  showToast(`"${productName}" aggiunto al carrello ✅`);
+
+  // Chiudi la modale ordine
+  modal.style.display = 'none';
+}
+
+    
+  function getCartTotal(cart){
+    return cart.reduce((sum, it) => {
+      const q = Number(it.quantita || 0);
+      const p = Number(it.prezzo_unitario || 0);
+      return sum + (p * q);
+    }, 0);
+  }
+  
+  function showCheckoutSuccess(nome, email, total){
+      const box = document.getElementById("checkoutFeedback");
+      if (!box) return;
+    
+      box.style.display = "block";
+      box.innerHTML = `
+        <div style="font-weight:700; font-size:15px; margin-bottom:6px;">
+          ✅ Ordine inviato correttamente
+        </div>
+    
+        <div style="margin-bottom:8px;">
+          Il riepilogo è stato inviato a:
+          <div style="font-weight:700;">${email}</div>
+        </div>
+    
+        <div style="margin-bottom:10px;">
+          Totale ordine: <b>€ ${total.toFixed(2).replace(".", ",")}</b>
+        </div>
+    
+        <button
+          style="
+            width:100%;
+            padding:10px;
+            border-radius:8px;
+            border:none;
+            background:#004aad;
+            color:#fff;
+            font-size:14px;
+            cursor:pointer;
+          "
+          onclick="closeCartAfterSuccess()"
+        >
+          Chiudi
+        </button>
+      `;
+    }
+
+    function closeCartAfterSuccess(){
+      hideCheckoutFeedback();
+      closeCart();
+    
+      const btn = document.getElementById("checkoutBtn");
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Invia ordine";
+        btn.style.opacity = "1";
+        btn.style.cursor = "pointer";
+      }
+    
+      checkoutLocked = false;
+    }
+
+  
+  function hideCheckoutFeedback(){
+    const box = document.getElementById("checkoutFeedback");
+    if (!box) return;
+    box.style.display = "none";
+    box.innerHTML = "";
+  }
+
+     // ===== CHECKOUT: INVIO UNICO =====
+    const ORDERS_ENDPOINT = "https://script.google.com/macros/s/AKfycbz8HwKgHq6V9K-z0Iy9IIOi_2Dn3o4JILKKnt14cu-S6sAxDbM1KXgyurjveJcQU4Gm/exec";
+    
+    let checkoutLocked = false;
+
+async function checkout() {
+  if (checkoutLocked) return;
+  checkoutLocked = true;
+
+  const btn = document.getElementById("checkoutBtn");
+  const oldText = btn ? btn.textContent : "Invia ordine";
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Invio in corso...";
+    btn.style.opacity = "0.7";
+    btn.style.cursor = "not-allowed";
+  }
+
+  try {
+    const cart = getCart();
+    if (cart.length === 0) {
+      alert("Carrello vuoto.");
+      throw new Error("cart vuoto");
+    }
+
+    const nome = (document.getElementById("checkoutName").value || "").trim();
+    const email = (document.getElementById("checkoutEmail").value || "").trim();
+
+    if (!nome) {
+      alert("Inserisci il nome ordinante.");
+      throw new Error("nome mancante");
+    }
+    if (!email || !email.includes("@")) {
+      alert("Inserisci una email valida.");
+      throw new Error("email non valida");
+    }
+
+    // Totale per conferma UI
+    const total = getCartTotal(cart);
+
+    const payload = {
+      nome_ordinante: nome,
+      email: email,
+      tipo_ordine: "CLIENTE",
+      items: cart
+    };
+
+    // INVIO "fire and forget" (niente lettura risposta: evita falsi errori)
+    await fetch(ORDERS_ENDPOINT, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+
+    // ✅ feedback elegante nel popup
+    showCheckoutSuccess(nome, email, total);
+
+    // svuota carrello e aggiorna UI
+    setCart([]);
+    renderCart();
+
+    // bottone resta bloccato e cambia testo
+    if (btn) {
+      btn.textContent = "Inviato ✅";
+    }
+
+  } catch (err) {
+    // se validazioni falliscono o fetch fallisce davvero
+    checkoutLocked = false;
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = oldText || "Invia ordine";
+      btn.style.opacity = "1";
+      btn.style.cursor = "pointer";
+    }
+    return;
+  }
+}
+    
+    function openHelp(){
+      document.getElementById("helpModal").style.display = "flex";
+    }
+    
+    function closeHelp(){
+      document.getElementById("helpModal").style.display = "none";
+    }
+    
+      
+    function closeOnBackdropClick(modalId, closeFn) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+    
+      modal.addEventListener("click", (e) => {
+        // se clicchi sullo sfondo (non sul contenuto)
+        if (e.target === modal) closeFn();
+      });
+    }
+
+    function showAddedAlert() {
+  const alertBox = document.getElementById('addedAlert');
+  alertBox.classList.add('show');
+  
+  // Dopo 2 secondi sfuma via
+  setTimeout(() => {
+    alertBox.classList.remove('show');
+  }, 2000);
+}
+
+// Modifica la funzione openOrder per chiamarlo
+function openOrder(btn) {
+  const card = btn.closest('.card');
+  const productName = card.querySelector('h3').textContent;
+  const modalProduct = document.getElementById('modalProduct');
+  modalProduct.textContent = productName;
+
+  const orderSize = document.getElementById('orderSize');
+  orderSize.innerHTML = ''; // reset
+
+  const sizes = card.dataset.size.split(',');
+  sizes.forEach(size => {
+    const opt = document.createElement('option');
+    opt.value = size;
+    opt.textContent = size;
+    orderSize.appendChild(opt);
+  });
+
+  document.getElementById('orderQty').value = 1;
+  document.getElementById('orderModal').style.display = 'flex';
+
+  // Mostra alert subito (puoi anche spostarlo in addCurrentToCart se preferisci)
+
+}
+
+
+    
+    // attiva chiusura click-fuori per i 3 popup
+    closeOnBackdropClick("orderModal", closeModal);
+    closeOnBackdropClick("cartModal", closeCart);
+    closeOnBackdropClick("helpModal", closeHelp);
+
+  
 </script>
+
 
 
 
