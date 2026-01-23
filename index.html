@@ -301,6 +301,7 @@
 </header>
 
 <div class="filter-bar">
+  <button data-target="sublimatico" class="active">PERSONALIZZATE (<span id="count-sublimatico"></span>)</button>
   <button data-target="tuta" class="active">Tuta di Rappresentanza (<span id="count-tuta"></span>)</button>
   <button data-target="viaggiare_comodi">Viaggiare Comodi (<span id="count-viaggiare_comodi"></span>)</button>
   <button data-target="felpe">Felpe con Logo (<span id="count-felpe"></span>)</button>
@@ -408,6 +409,21 @@
   </div>
 </div>
 
+  <section id="sublimatico" class="active">
+  <h2>Le nostre maglie personalizzate</h2>
+  <div class="catalog-grid">
+    <div class="card" data-size="2XS,XS,S,M,L,XL,2XL" data-personal="yes" data-price="29">
+      <img src="xxxxxxxxxxxxxxx" class="product-img">
+      <h3>Canotta Uomo</h3>
+      <p>Codice: 100086.200</p>
+      <p>Taglie: 12(2XS) · 14(XS) · S · M · L · XL · 2XL</p>
+      <p class="price">€29 – prezzo affiliati</p>
+      <a class="btn" href="#" onclick="openOrder(this); return false;">AGGIUNGI</a>
+    </div>
+
+    </div>
+</section>
+  
 <section id="tuta" class="active">
   <h2>LA NOSTRA TUTA</h2>
   <div class="catalog-grid">
@@ -419,6 +435,7 @@
       <p class="price">€20,5 – prezzo affiliati</p>
       <a class="btn" href="#" onclick="openOrder(this); return false;">AGGIUNGI</a>
     </div>
+    
     <div class="card" data-size="7XS,6XS,5XS,4XS,3XS,2XS,XS,S,M,L,XL,2XL" data-personal="no" data-price="18">
       <img src="100027.331-tuta-sotto.png" class="product-img">
       <h3>Pantalone lungo uomo Staff blu navy</h3>
@@ -433,7 +450,7 @@
 <section id="viaggiare_comodi">
   <h2>VIAGGIARE COMODI</h2>
   <div class="catalog-grid">
-    <div class="card" data-size="all" data-personal="yes" data-price="21.5">
+    <div class="card" data-size="S" data-personal="yes" data-price="21.5">
       <img src="400234.700-zaino.png" class="product-img">
       <h3>Zaino Estadio III</h3>
       <p>Codice articolo: 400234.700</p>
@@ -441,7 +458,7 @@
       <!-- ✅ FIX: tolto "<<a" -->
       <a class="btn" href="#" onclick="openOrder(this); return false;">AGGIUNGI</a>
     </div>
-    <div class="card" data-size="all" data-personal="yes" data-price="24">
+    <div class="card" data-size="S" data-personal="yes" data-price="24">
       <img src="400006.700-borsone.png" class="product-img">
       <h3>Borsa sportiva Training III blu royal</h3>
       <p>Codice articolo: 400006.700</p>
