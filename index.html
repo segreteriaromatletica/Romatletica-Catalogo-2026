@@ -302,9 +302,9 @@
 
 <div class="filter-bar">
   <button data-target="tuta" class="active">Tuta di Rappresentanza (<span id="count-tuta"></span>)</button>
-  <button data-target="viaggiare">Viaggiare Comodi (<span id="count-viaggiare"></span>)</button>
+  <button data-target="viaggiare_comodi">Viaggiare Comodi (<span id="count-viaggiare_comodi"></span>)</button>
   <button data-target="felpe">Felpe con Logo (<span id="count-felpe"></span>)</button>
-  <button data-target="performance">Performance Lei (<span id="count-performance"></span>)</button>
+  <button data-target="performance_lei">Performance Lei (<span id="count-performance_lei"></span>)</button>
   <button data-target="performance_lui">Performance Lui (<span id="count-performance_lui"></span>)</button>
   <button data-target="premium">Premium (<span id="count-premium"></span>)</button>
   <button data-target="Low_cost">Low cost (<span id="count-Low_cost"></span>)</button>
@@ -532,7 +532,7 @@
   </div>
 </section>
 
-<section id="performance">
+<section id="performance_lei">
   <h2>Performance Lei</h2>
   <div class="catalog-grid">
     
@@ -947,8 +947,20 @@
     if (!quantita || quantita < 1) { alert("Inserisci una quantità valida (>=1)."); return; }
 
     const articolo = selectedCard.querySelector("h3")?.innerText || "";
-    const codiceRaw = selectedCard.querySelector("p")?.innerText || "";
-    const codice = codiceRaw.replace("Codice articolo:", "").replace("Codice:", "").trim();
+    
+    // prende SEMPRE la riga che contiene "Codice" (non il primo <p> a caso)
+    const codiceRaw = Array.from(selectedCard.querySelectorAll("p"))
+      .map(p => p.innerText || "")
+      .find(t => t.includes("Codice")) || "";
+    
+    // codice "visibile" come prima (con il punto)
+    const codice = codiceRaw
+      .replace("Codice articolo:", "")
+      .replace("Codice:", "")
+      .trim();
+    
+    // ✅ nuovo: codice "nascosto" solo cifre (senza punti e senza perdere zeri)
+    const codice_intero = codice.replace(/\D/g, "");
 
     const catRaw = document.querySelector(".filter-bar button.active")?.innerText || "";
     const categoria = catRaw.replace(/\s*\(.*\)\s*$/, "").trim();
@@ -965,18 +977,28 @@
     ) || 0;
 
     const item = {
-      categoria, codice, articolo, taglia, quantita, personalizzazione,
+      categoria,
+      codice,              // codice con punto (visibile)
+      codice_intero,       // ✅ nuovo: codice solo cifre (nascosto)
+      articolo,
+      taglia,
+      quantita,
+      personalizzazione,
       prezzo_unitario: prezzoUnit
     };
 
+
     const cart = getCart();
-    const existing = cart.find(x => x.codice === item.codice && x.taglia === item.taglia);
+    const existing = cart.find(x => x.codice_intero === item.codice_intero && x.taglia === item.taglia);
+    
     if (existing) {
       existing.quantita = Number(existing.quantita) + Number(item.quantita);
     } else {
       cart.push(item);
     }
+    
     setCart(cart);
+
 
     document.getElementById("orderQty").value = 1;
     closeModal();
