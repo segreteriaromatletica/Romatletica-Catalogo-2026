@@ -49,6 +49,27 @@
       font-size:14px;
     }
 
+    /* POPUP ARTICOLO AGGIUNTO */
+    .added-alert {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #004aad;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      z-index: 500;
+    }
+    .added-alert.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    
     /* FILTRI MODELLO */
     .filter-bar {
       position: sticky;
@@ -1303,6 +1324,43 @@ async function checkout() {
         if (e.target === modal) closeFn();
       });
     }
+
+    function showAddedAlert() {
+  const alertBox = document.getElementById('addedAlert');
+  alertBox.classList.add('show');
+  
+  // Dopo 2 secondi sfuma via
+  setTimeout(() => {
+    alertBox.classList.remove('show');
+  }, 2000);
+}
+
+// Modifica la funzione openOrder per chiamarlo
+function openOrder(btn) {
+  const card = btn.closest('.card');
+  const productName = card.querySelector('h3').textContent;
+  const modalProduct = document.getElementById('modalProduct');
+  modalProduct.textContent = productName;
+
+  const orderSize = document.getElementById('orderSize');
+  orderSize.innerHTML = ''; // reset
+
+  const sizes = card.dataset.size.split(',');
+  sizes.forEach(size => {
+    const opt = document.createElement('option');
+    opt.value = size;
+    opt.textContent = size;
+    orderSize.appendChild(opt);
+  });
+
+  document.getElementById('orderQty').value = 1;
+  document.getElementById('orderModal').style.display = 'flex';
+
+  // Mostra alert subito (puoi anche spostarlo in addCurrentToCart se preferisci)
+  showAddedAlert();
+}
+
+
     
     // attiva chiusura click-fuori per i 3 popup
     closeOnBackdropClick("orderModal", closeModal);
@@ -1312,5 +1370,8 @@ async function checkout() {
   
 </script>
 
+<div id="addedAlert" class="added-alert">Articolo aggiunto al carrello ✅</div>
+
+  
 </body>
 </html>
