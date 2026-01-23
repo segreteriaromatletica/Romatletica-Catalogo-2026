@@ -991,11 +991,17 @@ function addCurrentToCart() {
   const qty = parseInt(document.getElementById('orderQty').value);
   if (!size || qty < 1) return alert('Seleziona taglia e quantità valide');
 
-  cart.push({
-    ...currentProduct,
-    size,
-    qty
-  });
+  // Se lo stesso prodotto e taglia esiste, somma quantità
+  const existingIndex = cart.findIndex(item => item.code === currentProduct.code && item.size === size);
+  if (existingIndex >= 0) {
+    cart[existingIndex].qty += qty;
+  } else {
+    cart.push({
+      ...currentProduct,
+      size,
+      qty
+    });
+  }
 
   updateCartCount();
   showToast(`${currentProduct.name} aggiunto al carrello (${qty}x)`);
@@ -1005,7 +1011,12 @@ function addCurrentToCart() {
 
 // ---- AGGIORNAMENTO CONTATORE ----
 function updateCartCount() {
-  document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+  let count = cart.reduce((sum, item) => sum + item.qty, 0);
+  const badge = document.getElementById('cartCount');
+  if (badge) {
+    badge.innerText = count;
+    badge.style.display = count > 0 ? 'inline-block' : 'none';
+  }
 }
 
 // ---- APERTURA MODALE CARRELLO ----
@@ -1048,10 +1059,8 @@ function showToast(message) {
   toast.innerText = message;
   document.body.appendChild(toast);
 
-  // Forza reflow per trigger animazione
   setTimeout(() => toast.classList.add('show'), 10);
 
-  // Auto rimozione dopo 2.5s
   setTimeout(() => {
     toast.classList.remove('show');
     setTimeout(() => toast.remove(), 500);
@@ -1075,7 +1084,11 @@ function checkout() {
   updateCartCount();
   document.getElementById('cartList').innerHTML = '';
 }
+
+// ---- inizializzazione contatore al caricamento ----
+document.addEventListener('DOMContentLoaded', updateCartCount);
 </script>
+
 
 
 <div id="addedAlert" class="added-alert">Articolo aggiunto al carrello ✅</div>
