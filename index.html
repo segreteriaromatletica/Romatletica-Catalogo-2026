@@ -1194,6 +1194,7 @@ function renderCart() {
 // Apri il modal per ordine
 function openOrder(btn) {
   const card = btn.closest('.card');
+  selectedCard = card;
   const productName = card.querySelector('h3').textContent;
   const modalProduct = document.getElementById('modalProduct');
   modalProduct.textContent = productName;
