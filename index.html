@@ -1401,35 +1401,7 @@ async function checkout() {
     function showAddedAlert() {
   const alertBox = document.getElementById('addedAlert');
   alertBox.classList.add('show');
-  
-  // Dopo 2 secondi sfuma via
-  setTimeout(() => {
-    alertBox.classList.remove('show');
-  }, 2000);
-}
 
-// Modifica la funzione openOrder per chiamarlo
-function openOrder(btn) {
-  const card = btn.closest('.card');
-  const productName = card.querySelector('h3').textContent;
-  const modalProduct = document.getElementById('modalProduct');
-  modalProduct.textContent = productName;
-
-  const orderSize = document.getElementById('orderSize');
-  orderSize.innerHTML = ''; // reset
-
-  const sizes = card.dataset.size.split(',');
-  sizes.forEach(size => {
-    const opt = document.createElement('option');
-    opt.value = size;
-    opt.textContent = size;
-    orderSize.appendChild(opt);
-  });
-
-  document.getElementById('orderQty').value = 1;
-  document.getElementById('orderModal').style.display = 'flex';
-
-  // Mostra alert subito (puoi anche spostarlo in addCurrentToCart se preferisci)
 
 }
 
