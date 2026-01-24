@@ -49,50 +49,6 @@
       font-size:14px;
     }
 
-    /* POPUP ARTICOLO AGGIUNTO */
-    .added-alert {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #004aad;
-      color: #fff;
-      padding: 12px 18px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease, transform 0.5s ease;
-      z-index: 500;
-    }
-    .added-alert.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* POPUP TOAST */
-.toast-alert {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%) translateY(30px);
-  background: #004aad;
-  color: #fff;
-  padding: 14px 22px;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
-  font-weight: bold;
-  font-size: 15px;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 1000;
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.toast-alert.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
     
     /* FILTRI MODELLO */
     .filter-bar {
@@ -1179,56 +1135,6 @@ function renderCart() {
     </div>
   `;
 }
-
-    function showToast(message) {
-  const toast = document.getElementById('toastAlert');
-  toast.textContent = message;
-  toast.classList.add('show');
-
-  // Dopo 2 secondi sfuma via
-  setTimeout(() => {
-    toast.classList.remove('show');
-  }, 2000);
-}
-
-// Apri il modal per ordine
-function openOrder(btn) {
-  const card = btn.closest('.card');
-  selectedCard = card;
-  const productName = card.querySelector('h3').textContent;
-  const modalProduct = document.getElementById('modalProduct');
-  modalProduct.textContent = productName;
-
-  const orderSize = document.getElementById('orderSize');
-  orderSize.innerHTML = ''; // reset
-
-  const sizes = card.dataset.size.split(',');
-  sizes.forEach(size => {
-    const opt = document.createElement('option');
-    opt.value = size;
-    opt.textContent = size;
-    orderSize.appendChild(opt);
-  });
-
-  document.getElementById('orderQty').value = 1;
-  document.getElementById('orderModal').style.display = 'flex';
-}
-
-// Aggiungi al carrello e mostra toast
-function addCurrentToCart() {
-  const modal = document.getElementById('orderModal');
-  const productName = document.getElementById('modalProduct').textContent;
-  
-  // Qui la tua logica attuale per aggiungere al carrello
-  addToCart(productName); // se hai una funzione esistente
-
-  // Mostra il toast
-  showToast(`"${productName}" aggiunto al carrello ✅`);
-
-  // Chiudi la modale ordine
-  modal.style.display = 'none';
-}
-
     
   function getCartTotal(cart){
     return cart.reduce((sum, it) => {
@@ -1402,24 +1308,16 @@ async function checkout() {
   const alertBox = document.getElementById('addedAlert');
   alertBox.classList.add('show');
 
-
 }
-
-
     
     // attiva chiusura click-fuori per i 3 popup
     closeOnBackdropClick("orderModal", closeModal);
     closeOnBackdropClick("cartModal", closeCart);
     closeOnBackdropClick("helpModal", closeHelp);
-
   
 </script>
 
-
-
-
 <div id="addedAlert" class="added-alert">Articolo aggiunto al carrello ✅</div>
-<div id="toastAlert" class="toast-alert">Articolo aggiunto al carrello ✅</div>
 
   
 </body>
