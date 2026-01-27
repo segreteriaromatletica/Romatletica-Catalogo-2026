@@ -302,8 +302,8 @@
 </header>
 
 <div class="filter-bar">
-  <button data-target="tuta" class="active">Tuta di Rappresentanza (<span id="count-tuta"></span>)</button>
   <button data-target="sublimatico" class="active">PERSONALIZZATE (<span id="count-sublimatico"></span>)</button> 
+  <button data-target="tuta">Tuta di Rappresentanza (<span id="count-tuta"></span>)</button>
   <button data-target="viaggiare_comodi">Viaggiare Comodi (<span id="count-viaggiare_comodi"></span>)</button>
   <button data-target="felpe">Felpe con Logo (<span id="count-felpe"></span>)</button>
   <button data-target="performance_lei">Performance Lei (<span id="count-performance_lei"></span>)</button>
@@ -909,7 +909,7 @@
   const sizeButtons = document.querySelectorAll('.size-filter-bar button');
   const sections = document.querySelectorAll('section');
 
-  let activeSection = "tuta";
+  let activeSection = "sublimatico";
   let activeSize = "all";
 
   typeButtons.forEach(button => {
@@ -1205,7 +1205,7 @@ function renderCart() {
   }
 
      // ===== CHECKOUT: INVIO UNICO =====
-    const ORDERS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyByHe5ErGaSnFl8-BC1OGmJZ0VjWBji2g_48M18KO-Yb2MxGJNjM2yipekLxgVAu0B/exec";
+    const ORDERS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxtiKeNFkRDN9Lv6YX28l03ydyidtW_vJOuRRISaj5zKi2lzMZAXC8lq8I6FqH8iRhs/exec";
     
     let checkoutLocked = false;
 
