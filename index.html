@@ -1115,8 +1115,6 @@ function renderCart() {
 
   const fmt = (n) => (Number(n || 0)).toFixed(2).replace(".", ",");
 
-  <div style="color:#555;">Note: ${it.note ? it.note : "-"}</div>
-
   const total = cart.reduce((sum, it) => {
     const q = Number(it.quantita || 0);
     const p = Number(it.prezzo_unitario || 0);
@@ -1135,9 +1133,13 @@ function renderCart() {
           <div style="color:#555;">
             Codice: ${it.codice} — Taglia: ${it.taglia} — Q.tà: ${q}
           </div>
+
           ${it.note ? `
-          <div style="margin-top:4px; color:#004aad;"><b>Note:</b> ${it.note}
-          </div>` : ``}
+            <div style="margin-top:4px; color:#004aad;">
+              <b>Note:</b> ${it.note}
+            </div>
+          ` : ``}
+
           <div style="margin-top:6px;">
             Prezzo: <b>€ ${fmt(p)}</b> — Totale riga: <b>€ ${fmt(r)}</b>
           </div>
@@ -1151,6 +1153,7 @@ function renderCart() {
     </div>
   `;
 }
+
     
   function getCartTotal(cart){
     return cart.reduce((sum, it) => {
