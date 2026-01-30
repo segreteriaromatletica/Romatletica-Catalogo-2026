@@ -260,7 +260,7 @@
     .modal-actions button { flex:1; padding:10px; border-radius:8px; border:none; font-size:14px; cursor:pointer; }
     .modal-actions .confirm { background:#004aad; color:white; }
     .modal-actions .cancel { background:#e0e0e0; color:#333; }
-
+  
     /* MOBILE */
     @media (max-width: 768px) {
       header {
@@ -359,6 +359,8 @@
     <select id="orderSize"></select>
     <label>Quantità</label>
     <input type="number" id="orderQty" value="1" min="1">
+    <label>Note</label>
+    <input type="text" id="orderNote" placeholder="Es. colore diverso,dettagli...">
     <div class="modal-actions">
       <button class="confirm" onclick="addCurrentToCart()">Aggiungi al carrello</button>
       <button class="cancel" onclick="closeModal()">Annulla</button>
@@ -400,9 +402,10 @@
     <div style="font-size:14px; line-height:1.5; color:#444;">
       <p><b>1.</b> Sfoglia il catalogo e scegli gli articoli.</p>
       <p><b>2.</b> Clicca su <b>AGGIUNGI</b>, seleziona taglia e quantità.</p>
-      <p><b>3.</b> Apri il <b>Carrello</b> e controlla il riepilogo.</p>
-      <p><b>4.</b> Inserisci nome ed email e invia l’ordine.</p>
-      <p style="margin-top:10px;">Riceverai una <b>mail di conferma</b> con il riepilogo.</p>
+      <p><b>3.</b> Se vuoi un altro colore inseriscilo nelle NOTE.</p>
+      <p><b>4.</b> Apri il <b>Carrello</b> e controlla il riepilogo.</p>
+      <p><b>5.</b> Inserisci nome ed email e invia l’ordine.</p>
+      <p style="margin-top:10px;">Riceverai una <b>mail di conferma</b> con il riepilogo, se non la ricevi scrivi a segreteriaromatletica@gmail.com.</p>
     </div>
     <div class="modal-actions">
       <button class="confirm" onclick="closeHelp()">Ho capito</button>
@@ -968,6 +971,7 @@
     const sizes = (selectedCard.dataset.size || "all").split(',');
 
     document.getElementById('modalProduct').innerText = title;
+    document.getElementById("orderNote").value = "";
 
     const sizeSelect = document.getElementById('orderSize');
     sizeSelect.innerHTML = '';
@@ -1011,6 +1015,8 @@
 
     const taglia = document.getElementById("orderSize").value || "";
     const quantita = Number(document.getElementById("orderQty").value || 0);
+    const note = (document.getElementById("orderNote").value || "").trim();
+
 
     if (!taglia) { alert("Seleziona una taglia."); return; }
     if (!quantita || quantita < 1) { alert("Inserisci una quantità valida (>=1)."); return; }
@@ -1053,7 +1059,8 @@
       taglia,
       quantita,
       personalizzazione,
-      prezzo_unitario: prezzoUnit
+      prezzo_unitario: prezzoUnit,
+      note
     };
 
 
@@ -1062,9 +1069,13 @@
     
     if (existing) {
       existing.quantita = Number(existing.quantita) + Number(item.quantita);
+    
+      // se la nuova nota non è vuota, sovrascrive (o puoi concatenare)
+      if (item.note) existing.note = item.note;
     } else {
       cart.push(item);
     }
+
     
     setCart(cart);
 
@@ -1104,6 +1115,8 @@ function renderCart() {
 
   const fmt = (n) => (Number(n || 0)).toFixed(2).replace(".", ",");
 
+  <div style="color:#555;">Note: ${it.note ? it.note : "-"}</div>
+
   const total = cart.reduce((sum, it) => {
     const q = Number(it.quantita || 0);
     const p = Number(it.prezzo_unitario || 0);
@@ -1122,6 +1135,9 @@ function renderCart() {
           <div style="color:#555;">
             Codice: ${it.codice} — Taglia: ${it.taglia} — Q.tà: ${q}
           </div>
+          ${it.note ? `
+          <div style="margin-top:4px; color:#004aad;"><b>Note:</b> ${it.note}
+          </div>` : ``}
           <div style="margin-top:6px;">
             Prezzo: <b>€ ${fmt(p)}</b> — Totale riga: <b>€ ${fmt(r)}</b>
           </div>
@@ -1205,7 +1221,7 @@ function renderCart() {
   }
 
      // ===== CHECKOUT: INVIO UNICO =====
-    const ORDERS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyW60sRQc54w3XmHWNul-_sBQ08dIB639eNCuKRsV2FIa-ZpDAh3fBHJCM2f8t62G9v/exec";
+    const ORDERS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyZIQd7pqLC5e2AL3wNx7uTvAzgcP992iKGcjKIohLT3oAIx7Ag0hsKOUllvAyZJrbQ/exec";
     
     let checkoutLocked = false;
 
