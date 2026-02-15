@@ -307,6 +307,21 @@
         font-size: 14px;
       }
 
+       /* === MOBILE: bottoni TAGLIE compatti se NON attivi === */
+      .size-filter-bar button{
+        padding: 4px 8px;       /* più piccoli */
+        font-size: 11px;
+        border-radius: 16px;
+        line-height: 1.1;
+      }
+    
+      /* taglia selezionata resta più grande */
+      .size-filter-bar button.active{
+        padding: 6px 12px;
+        font-size: 13px;
+        font-weight: bold;
+      }
+
       section.active {
         padding: 20px 15px;
       }
