@@ -282,6 +282,31 @@
         gap: 6px;
         padding: 10px;
       }
+        /* === MOBILE: bottoni menu categoria "compatti" se NON attivi === */
+      .filter-bar button{
+        padding: 6px 10px;      /* più piccolo quando non selezionato */
+        font-size: 12px;
+        border-radius: 5px;
+        line-height: 1.1;
+      }
+    
+      /* quello selezionato resta grande (come ora su desktop) */
+      .filter-bar button.active{
+        padding: 8px 16px;      /* uguale alla tua regola desktop */
+        font-size: 14px;
+        font-weight: bold;
+      }
+    
+      /* OUTLET: stesso comportamento (piccolo se non attivo, grande se attivo) */
+      .filter-bar button.outlet-btn{
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+      .filter-bar button.outlet-btn.active{
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+
       section.active {
         padding: 20px 15px;
       }
