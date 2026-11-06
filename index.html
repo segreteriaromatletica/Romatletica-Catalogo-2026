@@ -330,6 +330,9 @@
       }
       .card { padding: 16px; }
     }
+
+/* Ricerca catalogo: stili isolati */
+.catalog-search{margin:20px 30px;padding:20px;background:#fff;border:1px solid #ddd;border-radius:10px}.catalog-search label{display:block;font-size:20px;font-weight:bold;color:#004aad;margin-bottom:10px}.catalog-search-controls{display:flex;gap:8px}.catalog-search input{flex:1;min-width:0;padding:12px;font:inherit;font-size:16px;border:1px solid #aaa;border-radius:6px}.catalog-search button{padding:10px 14px;border:0;border-radius:6px;background:#004aad;color:white;cursor:pointer;font:inherit}.catalog-search button:focus-visible,.catalog-search input:focus-visible{outline:3px solid #004aad;outline-offset:3px}.catalog-search p{color:#555;margin:10px 0 0}#catalog-search-results{list-style:none;margin:0;padding:0;max-height:360px;overflow:auto}.catalog-search-result{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-top:1px solid #ddd}.catalog-search-result:first-child{margin-top:14px}.catalog-search-result small{display:block;color:#555;margin-top:4px}.catalog-search-result button{flex-shrink:0}.card.catalog-search-highlight{outline:3px solid #004aad;outline-offset:3px}@media(max-width:768px){.catalog-search{margin:15px;padding:15px}.catalog-search-result{flex-direction:column;align-items:flex-start}}
   </style>
 </head>
 
@@ -340,6 +343,14 @@
   <p>Asd Romatletica in collaborazione con Joma</p>
   <button class="btn help-btn" onclick="openHelp(); return false;">🛈 Istruzioni per ordinare</button>
 </header>
+
+<div class="catalog-search" role="search" aria-label="Ricerca nel catalogo">
+<label for="catalog-search-input">Cerca un articolo</label>
+<div class="catalog-search-controls"><input id="catalog-search-input" type="search" placeholder="Nome o codice articolo" aria-describedby="catalog-search-help" autocomplete="off"><button id="catalog-search-clear" type="button" hidden>Azzera</button></div>
+<p id="catalog-search-help">Cerca in tutte le sezioni per nome o codice, con o senza punto. Bastano le prime 6 cifre del modello.</p>
+<p id="catalog-search-status" role="status" aria-live="polite" aria-atomic="true"></p><ul id="catalog-search-results" aria-label="Articoli trovati" hidden></ul>
+</div>
+
 
 <div class="filter-bar">
   <button data-target="sublimatico" class="active">PERSONALIZZATE (<span id="count-sublimatico"></span>)</button> 
@@ -1413,5 +1424,53 @@ async function checkout() {
 </script>
 
   
+
+<script>
+// Ricerca indipendente: legge le schede e usa i filtri esistenti.
+(() => {
+ const input=document.getElementById('catalog-search-input');
+ const clear=document.getElementById('catalog-search-clear');
+ const status=document.getElementById('catalog-search-status');
+ const results=document.getElementById('catalog-search-results');
+ const normalize=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+ const products=Array.from(document.querySelectorAll('section .card')).map(card=>{
+  const section=card.closest('section');
+  const name=card.querySelector('h3').textContent.trim();
+  const line=Array.from(card.querySelectorAll('p')).find(p=>/codice/i.test(p.textContent));
+  const code=line?line.textContent.replace(/^.*?:\s*/,'').trim():'';
+  return {card,section,name,code,digits:code.replace(/\D/g,''),text:normalize(name),category:section.querySelector('h2').textContent.trim()};
+ });
+ let highlighted=null,timer;
+ function goTo(product){
+  document.querySelector('.size-filter-bar button[data-size="all"]').click();
+  Array.from(document.querySelectorAll('.filter-bar button')).find(b=>b.dataset.target===product.section.id).click();
+  if(highlighted)highlighted.classList.remove('catalog-search-highlight');
+  clearTimeout(timer);highlighted=product.card;highlighted.classList.add('catalog-search-highlight');
+  requestAnimationFrame(()=>{
+   const offset=['.filter-bar','.size-filter-bar'].reduce((sum,selector)=>{const bar=document.querySelector(selector);return sum+(getComputedStyle(bar).position==='sticky'?bar.getBoundingClientRect().height:0);},20);
+   window.scrollTo({top:Math.max(0,product.card.getBoundingClientRect().top+window.scrollY-offset),behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+   const title=product.card.querySelector('h3');title.setAttribute('tabindex','-1');title.focus({preventScroll:true});title.addEventListener('blur',()=>title.removeAttribute('tabindex'),{once:true});
+  });
+  timer=setTimeout(()=>product.card.classList.remove('catalog-search-highlight'),4000);
+ }
+ function search(){
+  const query=normalize(input.value);results.replaceChildren();results.hidden=!query;clear.hidden=!query;status.textContent='';if(!query)return;
+  let matches,fallback=false;
+  if(/^[\d.\s]+$/.test(query)){
+   const digits=query.replace(/\D/g,'');matches=digits?products.filter(p=>p.digits.startsWith(digits)):[];
+   if(!matches.length&&digits.length>6){matches=products.filter(p=>p.digits.slice(0,6)===digits.slice(0,6));fallback=matches.length>0;}
+  }else{const words=query.split(/\s+/);matches=products.filter(p=>words.every(word=>p.text.includes(word)));}
+  status.textContent=fallback?'Codice colore non presente: ecco gli articoli disponibili per questo modello ('+matches.length+').':matches.length?matches.length+(matches.length===1?' articolo trovato.':' articoli trovati.'):'Nessun articolo trovato. Prova un altro nome o le prime 6 cifre del codice.';
+  matches.forEach(product=>{
+   const item=document.createElement('li');item.className='catalog-search-result';
+   const info=document.createElement('div'),name=document.createElement('strong'),details=document.createElement('small'),button=document.createElement('button');
+   name.textContent=product.name;details.textContent='Codice: '+product.code+' · Sezione: '+product.category;info.append(name,details);
+   button.type='button';button.textContent='Vai all’articolo';button.setAttribute('aria-label','Vai a '+product.name+', '+product.category);button.addEventListener('click',()=>goTo(product));item.append(info,button);results.append(item);
+  });
+ }
+ input.addEventListener('input',search);clear.addEventListener('click',()=>{input.value='';search();input.focus();});
+})();
+</script>
+
 </body>
 </html>
